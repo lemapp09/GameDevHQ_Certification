@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73b0365c997824cd9a1d9a131d56ab12, type: 3}
+  m_Name: Peaceful
+  m_EditorClassIdentifier: 
+  _musicClips:
+  - {fileID: 8300000, guid: 3569e46da7e5d224b88ca98fd9a6190b, type: 3}
+  - {fileID: 8300000, guid: f3e6b16290714c641bd955db5158c031, type: 3}
+  - {fileID: 8300000, guid: 6d2e14f8c935e3c4da907785e55e6c7a, type: 3}
+  - {fileID: 8300000, guid: e165641f58239bc4eb7ca4b1735ab485, type: 3}
+  - {fileID: 8300000, guid: b016550ef0580a341adb82e9e797e742, type: 3}
