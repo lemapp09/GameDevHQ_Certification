@@ -22,6 +22,7 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void OnEnable() {
             GameManager.StartLevel += StartSpawningEnemies;
+            GameManager.StartPlay -= StartSpawningEnemies;
             GameManager.PauseLevel += StopSpawningEnemies;
             GameManager.UnpauseLevel += StartSpawningEnemies;
             GameManager.StopLevel += RePoolEnemies;
@@ -69,8 +70,7 @@ namespace MetroMayhem.Manager
         }
 
         private Vector3 GenerateSpawnPoint()
-        {   // -1.468, 0.737
-            //  0.005, -0.76
+        {
             return new Vector3(Random.Range(-1.468f, 0.005f), 0.64f, Random.Range(-0.76f, 0.737f));
         }
         
@@ -95,7 +95,8 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void OnDisable()
         {
-            GameManager.StartLevel -= StartSpawningEnemies;
+            GameManager.StartLevel -= StopSpawningEnemies;
+            GameManager.StartPlay -= StartSpawningEnemies;
             GameManager.PauseLevel -= StopSpawningEnemies;
             GameManager.UnpauseLevel -= StartSpawningEnemies;
             GameManager.StopLevel -= StopSpawningEnemies;

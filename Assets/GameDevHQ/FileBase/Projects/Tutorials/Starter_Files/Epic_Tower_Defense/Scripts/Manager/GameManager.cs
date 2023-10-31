@@ -34,6 +34,7 @@ namespace MetroMayhem.Manager
         private void Start() {
             Enemies.EnemyAI.EnemySurvived += EnemyHasReachedTheEnd;
             Enemies.EnemyAI.EnemyKilled += EnemyDied;
+            StartNextLevel();
         }
 
         public void StartNextLevel() {
