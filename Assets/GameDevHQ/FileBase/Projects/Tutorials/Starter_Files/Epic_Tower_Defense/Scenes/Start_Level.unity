@@ -17855,10 +17855,20 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2754012176883064231, guid: f8adb56a966b94eab884162545fc5703,
+        type: 3}
+      propertyPath: _weaponID
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3787378071199022422, guid: f8adb56a966b94eab884162545fc5703,
         type: 3}
       propertyPath: m_Name
       value: Dual_Gatling_Gun
+      objectReference: {fileID: 0}
+    - target: {fileID: 3787378071199022422, guid: f8adb56a966b94eab884162545fc5703,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7702430899046173013, guid: f8adb56a966b94eab884162545fc5703,
         type: 3}
@@ -18124,7 +18134,7 @@ PrefabInstance:
     - target: {fileID: 8257007149471409054, guid: 4e400368bb7f94660b86de99da9f8915,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.864
+      value: -13.86
       objectReference: {fileID: 0}
     - target: {fileID: 8257007149471409054, guid: 4e400368bb7f94660b86de99da9f8915,
         type: 3}
@@ -18134,7 +18144,7 @@ PrefabInstance:
     - target: {fileID: 8257007149471409054, guid: 4e400368bb7f94660b86de99da9f8915,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 1.149
+      value: 2.4
       objectReference: {fileID: 0}
     - target: {fileID: 8257007149471409054, guid: 4e400368bb7f94660b86de99da9f8915,
         type: 3}
@@ -18189,10 +18199,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Missile_Launcher_Dual_Turret
       objectReference: {fileID: 0}
+    - target: {fileID: 967659123900382474, guid: 482c1c8feb1e34a65818c681679a9b11,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7027457175394579170, guid: 482c1c8feb1e34a65818c681679a9b11,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.708
+      value: -13.79
       objectReference: {fileID: 0}
     - target: {fileID: 7027457175394579170, guid: 482c1c8feb1e34a65818c681679a9b11,
         type: 3}
@@ -18202,7 +18217,7 @@ PrefabInstance:
     - target: {fileID: 7027457175394579170, guid: 482c1c8feb1e34a65818c681679a9b11,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.207
+      value: 0.96
       objectReference: {fileID: 0}
     - target: {fileID: 7027457175394579170, guid: 482c1c8feb1e34a65818c681679a9b11,
         type: 3}
@@ -18257,10 +18272,15 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gatling_Gun
       objectReference: {fileID: 0}
+    - target: {fileID: 4483016502998064957, guid: 1a3b03713db254e28afaf5a0132a0997,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8696771559761431333, guid: 1a3b03713db254e28afaf5a0132a0997,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -13.944
+      value: -13.6
       objectReference: {fileID: 0}
     - target: {fileID: 8696771559761431333, guid: 1a3b03713db254e28afaf5a0132a0997,
         type: 3}
@@ -18270,7 +18290,7 @@ PrefabInstance:
     - target: {fileID: 8696771559761431333, guid: 1a3b03713db254e28afaf5a0132a0997,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.76
+      value: -2.4
       objectReference: {fileID: 0}
     - target: {fileID: 8696771559761431333, guid: 1a3b03713db254e28afaf5a0132a0997,
         type: 3}

@@ -75,7 +75,7 @@ namespace MetroMayhem.Manager
         public void PlayClicked()
         {
             _playImage.gameObject.SetActive(!_playImage.gameObject.activeSelf);
-            Manager.GameManager.Instance.StartNextLevel();
+            Manager.GameManager.Instance.StartPlayGame();
         }
 
         public void FastForwardClicked()

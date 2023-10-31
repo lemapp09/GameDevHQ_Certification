@@ -9,6 +9,10 @@ namespace MetroMayhem.Manager
                                             /// The Level Begins
                                             /// </summary>
         public static event startLevel StartLevel;
+        public delegate void startPlay();  /// <summary>
+        /// The Level Begins
+        /// </summary>
+        public static event startPlay StartPlay;
         public delegate void pauseLevel();  /// <summary>
                                             /// Player request a Pause
                                             /// </summary>
@@ -35,6 +39,11 @@ namespace MetroMayhem.Manager
         public void StartNextLevel() {
             _isPaused = false;
             StartLevel?.Invoke();
+        }
+
+        public void StartPlayGame() {
+            _isPaused = false;
+            StartPlay?.Invoke();
         }
 
         public void PauseCurrentLevel() {

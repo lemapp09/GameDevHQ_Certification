@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 
 namespace MetroMayhem.Weapons
 {
+    #region message
     /// <summary>
     /// This script will allow you to view the presentation of the Turret and use it within your project.
     /// Please feel free to extend this script however you'd like. To access this script from another script
@@ -21,9 +22,11 @@ namespace MetroMayhem.Weapons
     /// Al Heck
     /// Jonathan Weinberger
     /// </summary>
+    #endregion
     [RequireComponent(typeof(AudioSource))] //Require Audio Source component
-    public class Dual_Gatling_Gun : MonoBehaviour
+    public class Dual_Gatling_Gun : MonoBehaviour , IWeapon
     {
+        #region variables
         [SerializeField] private Transform[] _firePoint; // Where bullets are instantiated
         [SerializeField] private Transform[] _gunBarrel; //Reference to hold the gun barrel
 
@@ -39,7 +42,6 @@ namespace MetroMayhem.Weapons
         private AudioSource _audioSource; //reference to the audio source component
         private bool _startWeaponNoise = true;
         private MetroMayhemInputSystem _input;
-        private bool _isPaused = true;
 
         public float viewRange = 5f;
         public float viewAngle = 90f;
@@ -47,11 +49,22 @@ namespace MetroMayhem.Weapons
         public LayerMask obstacleMask;
         public List<Transform> visibleTargets = new List<Transform>();
 
+        private bool _isFiring;
+        private bool _isPaused;
+        private int _platformID;
+        [SerializeField] private int _weaponID;
+        private int _damageAmount;
+        private float tempRotY;
+        #endregion
+        
         private void OnEnable()
         {
+            _isPaused = true;
             _input = new MetroMayhemInputSystem();
             _input.Towers.Enable();
-            GameManager.StartLevel += UnpauseGun;
+            tempRotY= transform.localRotation.eulerAngles.y;
+            GameManager.StartLevel += PauseGun;
+            GameManager.StartPlay += UnpauseGun;
             GameManager.PauseLevel += PauseGun;
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
@@ -75,8 +88,9 @@ namespace MetroMayhem.Weapons
         {
             if (!_isPaused)
             {
-                if (_input.Towers.Fire.IsPressed() == true) //Check for left click (held) user input
+                if (_isFiring) //Check for left click (held) user input
                 {
+                    Debug.Log("Is Firing!");
                     RotateBarrel(); //Call the rotation function responsible for rotating our gun barrel
 
                     //for loop to iterate through all muzzle flash objects
@@ -94,7 +108,7 @@ namespace MetroMayhem.Weapons
                             false; //set the start weapon noise value to false to prevent calling it again
                     }
                 }
-                else if (_input.Towers.Fire.IsPressed() == false) //Check for left click (release) user input
+                else if (!_isFiring) //Check for left click (release) user input
                 {
                     //for loop to iterate through all muzzle flash objects
                     for (int i = 0; i < _muzzleFlash.Length; i++)
@@ -138,6 +152,25 @@ namespace MetroMayhem.Weapons
                 hit.collider.SendMessage("Damage", 35);
             }
         }
+        public void Damage()
+        {
+            //
+        }
+
+        public void Rotate(bool rotateLeft) {
+            if (rotateLeft) {
+                tempRotY -= 15f;
+            } else  {
+                tempRotY += 15f;
+            }
+
+            if (tempRotY <= 0) {
+                tempRotY = 0;}
+            else if (tempRotY >= 360) {
+                tempRotY = 360;
+            }
+            transform.localRotation = Quaternion.Euler(0, tempRotY, 0);
+        }
 
         // Method to rotate gun barrel 
         void RotateBarrel()
@@ -150,9 +183,23 @@ namespace MetroMayhem.Weapons
                         -500.0f); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
         }
 
+        private void OnMouseDown() {
+            _isFiring = true;
+        }
+
+        private void OnMouseUp() {
+            _isFiring = false;
+        }
+
+        private void OnMouseDrag()
+        {
+            //
+        }
+
         private void OnDisable()
         {
-            GameManager.StartLevel -= UnpauseGun;
+            GameManager.StartLevel -= PauseGun;
+            GameManager.StartPlay -= UnpauseGun;
             GameManager.PauseLevel -= PauseGun;
             GameManager.UnpauseLevel -= UnpauseGun;
             GameManager.StopLevel -= PauseGun;
