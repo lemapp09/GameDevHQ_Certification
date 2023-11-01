@@ -21,8 +21,8 @@ namespace MetroMayhem.Manager
         /// Connects to events
         /// </summary>
         private void OnEnable() {
-            GameManager.StartLevel += StartSpawningEnemies;
-            GameManager.StartPlay -= StartSpawningEnemies;
+            GameManager.StartLevel += StopSpawningEnemies;
+            GameManager.StartPlay += StartSpawningEnemies;
             GameManager.PauseLevel += StopSpawningEnemies;
             GameManager.UnpauseLevel += StartSpawningEnemies;
             GameManager.StopLevel += RePoolEnemies;
@@ -100,7 +100,7 @@ namespace MetroMayhem.Manager
             GameManager.PauseLevel -= StopSpawningEnemies;
             GameManager.UnpauseLevel -= StartSpawningEnemies;
             GameManager.StopLevel -= StopSpawningEnemies;
-            GameManager.RestartLevel += RePoolEnemies;
+            GameManager.RestartLevel -= RePoolEnemies;
         }
     }
 }
