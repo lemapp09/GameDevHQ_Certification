@@ -1,18 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using MetroMayhem.Manager;
-using Unity.VisualScripting;
 using UnityEngine;
 
 namespace MetroMayhem.Weapons
 {
+    [RequireComponent(typeof(SpriteRenderer))]
+    [RequireComponent(typeof(Collider))]
     public class RotationArrows : MonoBehaviour
     {
         [SerializeField] private GameObject _weaponToRotate;
         private IWeapon _iWeaponToRotate;
         [SerializeField] private bool _isLeft;
         [SerializeField] private SpriteRenderer _spriteRenderer;
+        [SerializeField] private Collider _collider;
 
         
         private void OnEnable()
@@ -20,6 +19,13 @@ namespace MetroMayhem.Weapons
             if (_weaponToRotate.GetComponent<IWeapon>() != null) {
                 _iWeaponToRotate = _weaponToRotate.GetComponent<IWeapon>();
             }
+            if (_spriteRenderer == null) {
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            }
+            if (_collider == null) {
+                _collider = GetComponent<Collider>();
+            }
+
             GameManager.StartLevel += UnPauseRotation;
             GameManager.StartPlay += PauseRotation;
             GameManager.PauseLevel += UnPauseRotation;
@@ -38,10 +44,12 @@ namespace MetroMayhem.Weapons
 
         private void PauseRotation() {
             _spriteRenderer.enabled = false;
+            _collider.enabled = false;
         }
 
         private void UnPauseRotation() {
             _spriteRenderer.enabled = true;
+            _collider.enabled = true;
         }
 
         private void OnDisable() {

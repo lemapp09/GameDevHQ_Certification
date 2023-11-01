@@ -10160,13 +10160,14 @@ GameObject:
   - component: {fileID: 2379695102111906818}
   - component: {fileID: 2754012176883064231}
   - component: {fileID: 4820192580487372566}
+  - component: {fileID: 3880621568016016238}
   m_Layer: 0
   m_Name: Dual_Gatling_Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7702430899046173013
 Transform:
   m_ObjectHideFlags: 0
@@ -10345,6 +10346,23 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 0.96, z: 0.85}
+--- !u!114 &3880621568016016238
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3787378071199022422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8dc84d11b9b49c3a6f85e6ae8148ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _raycastDelay: 1
+  _radius: 1.5
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &4120024312957935849
 GameObject:
   m_ObjectHideFlags: 0
@@ -20415,6 +20433,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 3787378071199022422}
   _isLeft: 0
   _spriteRenderer: {fileID: 3141417570464470596}
+  _collider: {fileID: 0}
 --- !u!65 &3653536045078368520
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -25464,6 +25483,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 3787378071199022422}
   _isLeft: 1
   _spriteRenderer: {fileID: 7880080104443168500}
+  _collider: {fileID: 0}
 --- !u!65 &5526209748205778936
 BoxCollider:
   m_ObjectHideFlags: 0

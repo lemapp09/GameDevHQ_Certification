@@ -6,7 +6,7 @@ namespace MetroMayhem.Weapons
 {
     [RequireComponent(typeof(Rigidbody))] //require rigidbody
     [RequireComponent(typeof(AudioSource))] //require audiosource
-    public class Missle : MonoBehaviour
+    public class Missile : MonoBehaviour
     {
         [SerializeField]
         private ParticleSystem _particle; //reference to the particle system

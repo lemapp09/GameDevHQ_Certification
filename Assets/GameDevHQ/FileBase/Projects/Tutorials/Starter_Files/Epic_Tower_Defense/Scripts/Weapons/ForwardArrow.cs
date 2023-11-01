@@ -7,11 +7,15 @@ using UnityEngine;
 
 namespace MetroMayhem.Weapons
 {
+    [RequireComponent(typeof(SpriteRenderer))]
     public class ForwardArrow : MonoBehaviour
     {
         [SerializeField] private SpriteRenderer _spriteRenderer;
         
         private void OnEnable() {
+            if (_spriteRenderer == null) {
+                _spriteRenderer = GetComponent<SpriteRenderer>();
+            }
             GameManager.StartLevel += UnpauseRotation;
             GameManager.StartPlay += PauseRotation;
             GameManager.PauseLevel += UnpauseRotation;

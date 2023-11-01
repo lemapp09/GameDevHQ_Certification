@@ -39,9 +39,9 @@ namespace MetroMayhem.Enemies
         [Header("Health")]
         [SerializeField] private float _health = 100f;
         
-        private bool _isHit, _isDead, _isPaused;
+        private bool _isHit, _isDead, _isPaused, _isAttacking;
         private int _idlesHash, _hitsHash, _deathsHash, _idealNumberHash, _deathHash, _hitHash, _speedHash,
-            _dissolveAmmountID;
+            _attackHash,  _dissolveAmmountID;
 
         private float _speedCheckTimer = 0f, _speedCheckInterval = 0.1f;
         private float _unfreezeCharacter = 0f, _unfreezeInterval = 1.0f;
@@ -105,9 +105,27 @@ namespace MetroMayhem.Enemies
             _isPaused = true;
             _anim.SetFloat(_speedHash, 0f);
         }
+
+        public void Attack()
+        {
+            if (!_isPaused && !_isAttacking && !_isDead && !_isHit)
+            {
+                StartCoroutine(AttackActions());
+            }
+        }
+
+        private IEnumerator AttackActions()
+        {
+            _isAttacking = true;
+            _anim.SetTrigger(_attackHash);
+            _anim.SetFloat(_speedHash, 0f);
+            yield return new WaitForSeconds(Time.deltaTime);
+            _isAttacking = false;
+        }
+        
         
         void Update() {
-            if (!_isPaused)
+            if (!_isPaused && !_isAttacking && !_isHit && !_isDead)
             {
                 _speedCheckTimer += Time.deltaTime;
                 _unfreezeCharacter += Time.deltaTime;
@@ -194,13 +212,20 @@ namespace MetroMayhem.Enemies
             if (stateInfo.shortNameHash == _deathsHash) {
                 StartCoroutine(DissolveEnemy(stateInfo.length));
             }
+            if (stateInfo.shortNameHash == _hitsHash) {
+                StartCoroutine(HitRoutine());
+            }
         }
 
         public void OnAnimationStateExited(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             if (stateInfo.shortNameHash == _hitsHash) {
-               _isHit = false;
-               _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+            }
+
+            if (stateInfo.shortNameHash == _attackHash)
+            {
+                _isAttacking = false;
+                _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
             }
         }
 
@@ -221,14 +246,6 @@ namespace MetroMayhem.Enemies
             PoolManager.Instance.ReturnToPool(this.gameObject);
         }
 
-        private IEnumerator DestroyEnemy(float animLength)
-        {
-            _isHit = true;
-            _isDead = true;
-            yield return  new WaitForSeconds(0.5f);
-            PoolManager.Instance.ReturnToPool(this.gameObject);
-        }
-        
         private void OnDisable(){
             Manager.GameManager.PauseLevel -= Pause;
             Manager.GameManager.UnpauseLevel -= Unpause;
@@ -244,6 +261,7 @@ namespace MetroMayhem.Enemies
             _deathHash =  hashCodes[4];
             _hitHash =  hashCodes[5];
             _speedHash = hashCodes[6];
+            _attackHash = hashCodes[7];
         }
         
         public void InitializeAudioSource() {

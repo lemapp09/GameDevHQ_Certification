@@ -37,6 +37,7 @@ namespace MetroMayhem.Weapons
         private bool _isPaused;
         private int _damageAmount;
         private float tempRotY;
+        private float _health = 100;
         #endregion
         
         private void OnEnable()
@@ -93,19 +94,24 @@ namespace MetroMayhem.Weapons
             {
                 yield return new WaitForSeconds(_reloadTime); //wait for reload time
                 _misslePositionsLeft[i].SetActive(true); //enable fake rocket to show ready to fire
-                _misslePositionsRight[i].SetActive(true); //enable fake rocket to show ready to fire
+                if (_isDual) {
+                    _misslePositionsRight[i].SetActive(true); //enable fake rocket to show ready to fire
+                }
             }
 
             _launched = false; //set launch bool to false
         }
         
-        public void Damage()
+        public void Damage(int DamageAmmount)
         {
-            //
+            _health -= DamageAmmount;
+            if(_health <= 0)
+            {
+                Destroy(gameObject);
+            }
         }
 
-        public void Rotate(bool rotateLeft)
-        {
+        public void Rotate(bool rotateLeft) {
             if (rotateLeft) {
                 tempRotY -= 15f;
             } else  {
@@ -119,10 +125,8 @@ namespace MetroMayhem.Weapons
             }
             transform.localRotation = Quaternion.Euler(0, tempRotY, 0);
         }
-
-
-        private void OnDisable()
-        {
+        
+        private void OnDisable() {
             GameManager.StartLevel -= PauseGun;
             GameManager.StartPlay -= UnpauseGun;
             GameManager.PauseLevel -= PauseGun;
@@ -131,29 +135,20 @@ namespace MetroMayhem.Weapons
             GameManager.RestartLevel -= PauseGun;
         }
 
-        private void PauseGun()
-        {
+        private void PauseGun() {
             _isPaused = true;
         }
 
-        private void UnpauseGun()
-        {
+        private void UnpauseGun() {
             _isPaused = false;
         }
 
-        private void OnMouseDown()
-        {
+        private void OnMouseDown() {
             _isFiring = true;
         }
 
-        private void OnMouseUp()
-        {
+        private void OnMouseUp() {
             _isFiring = false;
-        }
-
-        private void OnMouseDrag()
-        {
-            //
         }
     }
 }

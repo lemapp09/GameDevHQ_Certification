@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using MetroMayhem.Enemies;
 using MetroMayhem.Manager;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using Random = UnityEngine.Random;
@@ -54,7 +55,8 @@ namespace MetroMayhem.Weapons
         private int _platformID;
         [SerializeField] private int _weaponID;
         private int _damageAmount;
-        private float tempRotY;
+        private float _tempRotY;
+        private float _health = 100;
         #endregion
         
         private void OnEnable()
@@ -62,7 +64,7 @@ namespace MetroMayhem.Weapons
             _isPaused = true;
             _input = new MetroMayhemInputSystem();
             _input.Towers.Enable();
-            tempRotY= transform.localRotation.eulerAngles.y;
+            _tempRotY= transform.localRotation.eulerAngles.y;
             GameManager.StartLevel += PauseGun;
             GameManager.StartPlay += UnpauseGun;
             GameManager.PauseLevel += PauseGun;
@@ -152,35 +154,38 @@ namespace MetroMayhem.Weapons
                 hit.collider.SendMessage("Damage", 35);
             }
         }
-        public void Damage()
+        public void Damage(int DamageAmount)
         {
-            //
+            _health -= DamageAmount;
+            if (_health < 0) {
+                Destroy(gameObject);
+            }
         }
 
         public void Rotate(bool rotateLeft) {
             if (rotateLeft) {
-                tempRotY -= 15f;
+                _tempRotY -= 15f;
             } else  {
-                tempRotY += 15f;
+                _tempRotY += 15f;
             }
 
-            if (tempRotY <= 0) {
-                tempRotY = 0;}
-            else if (tempRotY >= 360) {
-                tempRotY = 360;
+            if (_tempRotY <= 0) {
+                _tempRotY = 0;}
+            else if (_tempRotY >= 360) {
+                _tempRotY = 360;
             }
-            transform.localRotation = Quaternion.Euler(0, tempRotY, 0);
+            transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
         }
 
         // Method to rotate gun barrel 
         void RotateBarrel()
         {
             _gunBarrel[0].transform
-                .Rotate(Vector3.forward * Time.deltaTime *
-                        -500.0f); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
+                .Rotate(-500.0f * Time.deltaTime *
+                        Vector3.forward); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
             _gunBarrel[1].transform
-                .Rotate(Vector3.forward * Time.deltaTime *
-                        -500.0f); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
+                .Rotate(-500.0f * Time.deltaTime *
+                        Vector3.forward); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
         }
 
         private void OnMouseDown() {

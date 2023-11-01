@@ -8,7 +8,7 @@ namespace MetroMayhem.Weapons
     // Interface
     public interface IWeapon
     {
-        public void Damage();
+        public void Damage(int DamageAmount);
         public void Rotate(bool rotateLeft);
     }
 }

@@ -37,7 +37,8 @@ namespace MetroMayhem.Weapons
         [SerializeField] public int _weaponID;
         private bool _isPaused;
         private int _damageAmount;
-        private float tempRotY;
+        private float _tempRotY;
+        private float _health;
         #endregion
         
         private void OnEnable()
@@ -45,7 +46,7 @@ namespace MetroMayhem.Weapons
             _isPaused = true;
             _input = new MetroMayhemInputSystem();
             _input.Towers.Enable();
-            tempRotY= transform.localRotation.eulerAngles.y;
+            _tempRotY= transform.localRotation.eulerAngles.y;
             GameManager.StartLevel += PauseGun;
             GameManager.StartPlay += UnpauseGun;
             GameManager.PauseLevel += PauseGun;
@@ -100,25 +101,29 @@ namespace MetroMayhem.Weapons
 
         }
         
-        public void Damage()
+        public void Damage(int DamageAmount)
         {
-            //
+            _health -= DamageAmount;
+            if (DamageAmount < 0)
+            {
+                Destroy(gameObject);
+            }
         }
 
         public void Rotate(bool rotateLeft)
         {
             if (rotateLeft) {
-                tempRotY -= 15f;
+                _tempRotY -= 15f;
             } else  {
-                tempRotY += 15f;
+                _tempRotY += 15f;
             }
 
-            if (tempRotY <= 0) {
-                tempRotY = 0;}
-            else if (tempRotY >= 360) {
-                tempRotY = 360;
+            if (_tempRotY <= 0) {
+                _tempRotY = 0;}
+            else if (_tempRotY >= 360) {
+                _tempRotY = 360;
             }
-            transform.localRotation = Quaternion.Euler(0, tempRotY, 0);
+            transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
         }
 
 

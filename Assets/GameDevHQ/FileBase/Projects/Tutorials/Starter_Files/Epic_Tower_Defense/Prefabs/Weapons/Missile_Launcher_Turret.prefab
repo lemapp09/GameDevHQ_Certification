@@ -11,14 +11,14 @@ GameObject:
   - component: {fileID: 8257007149471409054}
   - component: {fileID: 1236089690615597395}
   - component: {fileID: 8661571441897512517}
-  - component: {fileID: 4981478945580368755}
+  - component: {fileID: 4652669551215951080}
   m_Layer: 0
   m_Name: Missile_Launcher_Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8257007149471409054
 Transform:
   m_ObjectHideFlags: 0
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a68046a10d4882b99fcdab5ad5982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _missilePrefab: {fileID: 1408549652012730, guid: 6f244204e60f45647b263f4edda01147,
+  _missilePrefab: {fileID: 1909211218276452, guid: 4256fd31d93fb4e7f9006d80cfcde330,
     type: 3}
   _misslePositionsLeft:
   - {fileID: 7675634035547837901}
@@ -90,7 +90,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 1.5
   m_Center: {x: 0, y: 1.14, z: 0}
---- !u!114 &4981478945580368755
+--- !u!114 &4652669551215951080
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -99,12 +99,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 690610485643192979}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f22f3a391500442f0a6c3197bd9b6457, type: 3}
+  m_Script: {fileID: 11500000, guid: 6c8dc84d11b9b49c3a6f85e6ae8148ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponToRotate: {fileID: 0}
-  _isLeft: 0
-  _spriteRenderer: {fileID: 0}
+  _raycastDelay: 1
+  _radius: 1.5
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &927811611859306001
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,6 +406,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 690610485643192979}
   _isLeft: 0
   _spriteRenderer: {fileID: 4510303272887932464}
+  _collider: {fileID: 0}
 --- !u!65 &3265693899689143607
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1022,6 +1025,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 690610485643192979}
   _isLeft: 1
   _spriteRenderer: {fileID: 3797346491203698145}
+  _collider: {fileID: 0}
 --- !u!65 &1258471734048865206
 BoxCollider:
   m_ObjectHideFlags: 0

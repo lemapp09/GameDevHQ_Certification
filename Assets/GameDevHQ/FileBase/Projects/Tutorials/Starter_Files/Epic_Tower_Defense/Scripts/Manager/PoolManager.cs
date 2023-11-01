@@ -7,6 +7,7 @@ namespace MetroMayhem.Manager
 
     public class PoolManager : MonoSingleton<PoolManager>
     {
+        #region Variables
         [SerializeField] private List<GameObject> _listOfEnemyPrefabs;
         [SerializeField] private List<Transform> _waypoints;
         public GameObject pooledObject; // Prefab to be pooled
@@ -15,9 +16,11 @@ namespace MetroMayhem.Manager
         private List<GameObject> _pooledObjects;
         private Queue<int> _prefabQueue;
         private List<int> _tempList;
-        private int[] _hashCodes = new int[7];
-
+        private int[] _hashCodes;
+        #endregion
+        
         private void OnEnable() {
+            _hashCodes = new int[8];
             GetAnimatorHashCodes();
         }
 
@@ -99,6 +102,7 @@ namespace MetroMayhem.Manager
             _hashCodes[4] = Animator.StringToHash("Death");
             _hashCodes[5] = Animator.StringToHash("Hit");
             _hashCodes[6] = Animator.StringToHash("Speed");
+            _hashCodes[7] = Animator.StringToHash("Attack");
         }
     }
 }

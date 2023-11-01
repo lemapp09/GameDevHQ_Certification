@@ -178,13 +178,14 @@ GameObject:
   - component: {fileID: 7027457175394579170}
   - component: {fileID: 2061340501855521099}
   - component: {fileID: 2034633348623873643}
+  - component: {fileID: 3708888922699750939}
   m_Layer: 0
   m_Name: Missile_Launcher_Dual_Turret
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7027457175394579170
 Transform:
   m_ObjectHideFlags: 0
@@ -217,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a68046a10d4882b99fcdab5ad5982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _missilePrefab: {fileID: 1909211218276452, guid: 5c6948683bd97124a91ca4af6a7ed8b4,
+  _missilePrefab: {fileID: 1909211218276452, guid: 4256fd31d93fb4e7f9006d80cfcde330,
     type: 3}
   _misslePositionsLeft:
   - {fileID: 880700779922114473}
@@ -262,6 +263,23 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 2
   m_Center: {x: 0, y: 1.49, z: 0}
+--- !u!114 &3708888922699750939
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 967659123900382474}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c8dc84d11b9b49c3a6f85e6ae8148ba, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _raycastDelay: 1
+  _radius: 1.5
+  _enemyLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &1090338589720798415
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +714,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 967659123900382474}
   _isLeft: 0
   _spriteRenderer: {fileID: 1449097815876724493}
+  _collider: {fileID: 0}
 --- !u!65 &8698857474302903517
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1657,6 +1676,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 967659123900382474}
   _isLeft: 1
   _spriteRenderer: {fileID: 7263410365250154137}
+  _collider: {fileID: 0}
 --- !u!65 &2185681660831742038
 BoxCollider:
   m_ObjectHideFlags: 0
