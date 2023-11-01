@@ -9832,7 +9832,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _howManyEnemyToSPawn: 150
-  _timeBetweenSpawns: 0.1
+  _timeBetweenSpawns: 0.2
   _isLevelOver: 0
 --- !u!4 &1284850371
 Transform:

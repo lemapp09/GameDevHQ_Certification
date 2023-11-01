@@ -97,30 +97,42 @@ namespace MetroMayhem.Enemies
         private void Unpause() { 
             // _agent Start
             _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+            _isPaused = false;
         }
 
         private void Pause() {
             _agent.SetDestination(this.transform.position);
+            _isPaused = true;
+            _anim.SetFloat(_speedHash, 0f);
         }
         
         void Update() {
-            _speedCheckTimer += Time.deltaTime;
-            _unfreezeCharacter += Time.deltaTime;
-            if (_speedCheckTimer >= _speedCheckInterval) {
-                if (!_isHit && !_isDead) {
-                    // Get the velocity of the NavMeshAgent and set the Speed parameter of the Animator
-                    float3 speed1 = _agent.EntityBody.Velocity;
-                    Vector3 vector = new Vector3(speed1.x, speed1.y, speed1.z);
-                    _anim.SetFloat(_speedHash, vector.magnitude);
+            if (!_isPaused)
+            {
+                _speedCheckTimer += Time.deltaTime;
+                _unfreezeCharacter += Time.deltaTime;
+                if (_speedCheckTimer >= _speedCheckInterval)
+                {
+                    if (!_isHit && !_isDead)
+                    {
+                        // Get the velocity of the NavMeshAgent and set the Speed parameter of the Animator
+                        float3 speed1 = _agent.EntityBody.Velocity;
+                        Vector3 vector = new Vector3(speed1.x, speed1.y, speed1.z);
+                        _anim.SetFloat(_speedHash, vector.magnitude);
 
-                    // Rotate the enemy to face the direction of travel
-                    if (-vector.sqrMagnitude > Mathf.Epsilon) {
-                        transform.rotation = Quaternion.LookRotation(vector.normalized);
+                        // Rotate the enemy to face the direction of travel
+                        if (-vector.sqrMagnitude > Mathf.Epsilon)
+                        {
+                            transform.rotation = Quaternion.LookRotation(vector.normalized);
+                        }
                     }
                 }
-            }
-            if(_unfreezeCharacter >= _unfreezeInterval) {  // Check every second to start a frozen character
-                UnFreezeEnemy();
+
+                if (_unfreezeCharacter >= _unfreezeInterval)
+                {
+                    // Check every second to start a frozen character
+                    UnFreezeEnemy();
+                }
             }
         }
 
