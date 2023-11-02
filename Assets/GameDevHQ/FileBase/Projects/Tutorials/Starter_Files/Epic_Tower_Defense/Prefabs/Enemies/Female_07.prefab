@@ -259,7 +259,6 @@ MonoBehaviour:
   _agent: {fileID: 0}
   _currentWayPointIndex: 0
   _anim: {fileID: 1435215865370466326}
-  _maxSpeed: 1.5
   _mixerGroup: {fileID: -7197221023225322720, guid: 134acbf1a38654ad7a3979bdc01db942,
     type: 2}
   _dissolveSpeed: 3
@@ -275,7 +274,8 @@ AudioSource:
   m_GameObject: {fileID: 1435215865379826640}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7197221023225322720, guid: 134acbf1a38654ad7a3979bdc01db942,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1

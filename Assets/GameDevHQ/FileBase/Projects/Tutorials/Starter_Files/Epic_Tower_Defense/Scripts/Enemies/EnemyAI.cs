@@ -24,7 +24,6 @@ namespace MetroMayhem.Enemies
         
         [Header("Animator")]
         [SerializeField] private Animator _anim;
-        [SerializeField] private float _maxSpeed = 1.5f;
         
         [Header("Audio")]
         [SerializeField] private AudioMixerGroup _mixerGroup;

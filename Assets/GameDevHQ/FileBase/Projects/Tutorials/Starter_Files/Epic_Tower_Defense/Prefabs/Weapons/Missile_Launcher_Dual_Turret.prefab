@@ -194,7 +194,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 967659123900382474}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0.66902035, z: 0, w: 0.74324405}
+  m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
@@ -205,7 +205,7 @@ Transform:
   - {fileID: 1192565660289361641}
   - {fileID: 6613902177484906037}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 83.983, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &2061340501855521099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,7 +218,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e1a68046a10d4882b99fcdab5ad5982, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _missilePrefab: {fileID: 1909211218276452, guid: 4256fd31d93fb4e7f9006d80cfcde330,
+  _fireballPrefab: {fileID: 4688366796816071956, guid: 2b5aa73eb567d44e6afb5d62baa57f50,
     type: 3}
   _misslePositionsLeft:
   - {fileID: 880700779922114473}
@@ -239,7 +239,7 @@ MonoBehaviour:
   _power: 20
   _fuseDelay: 0
   _reloadTime: 0
-  _destroyTime: 10
+  _destroyTime: 1
   _isDual: 1
   _weaponID: 3
 --- !u!135 &2034633348623873643
@@ -631,7 +631,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1192565660289361641
 Transform:
   m_ObjectHideFlags: 0
@@ -1207,7 +1207,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &6613902177484906037
 Transform:
   m_ObjectHideFlags: 0
@@ -1593,7 +1593,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8620676110018732031
 Transform:
   m_ObjectHideFlags: 0

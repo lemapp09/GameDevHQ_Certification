@@ -89,7 +89,7 @@ namespace MetroMayhem.Weapons
             _launchSpeed = launchSpeed; //set the launch speed
             _power = power; //set the power
             _fuseDelay = fuseDelay; //set the fuse delay
-            Destroy(this.gameObject, destroyTimer); //destroy the rocket after destroyTimer 
+            var temp = MissilePoolManager.Instance.ReturnMissile(this.gameObject, destroyTimer); //Repool the rocket after destroyTimer 
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace MetroMayhem.Manager
@@ -8,13 +9,14 @@ namespace MetroMayhem.Manager
     public class PoolManager : MonoSingleton<PoolManager>
     {
         #region Variables
+        [Header("Enemy Pool Settings")]
         [SerializeField] private List<GameObject> _listOfEnemyPrefabs;
         [SerializeField] private List<Transform> _waypoints;
-        public GameObject pooledObject; // Prefab to be pooled
-        public int pooledAmount; // Initial pooled amount
-        public bool willGrow = true; // Should the pool grow?
-        private List<GameObject> _pooledObjects;
-        private Queue<int> _prefabQueue;
+        [SerializeField] private GameObject pooledEnemyObject; // Prefab to be pooled
+        [SerializeField] private int pooledEnemyAmount; // Initial pooled amount
+        [SerializeField] private bool willEnemyGrow = true; // Should the pool grow?
+        private List<GameObject> _pooledEnemyObjects;
+        private Queue<int> _prefabEnemyQueue;
         private List<int> _tempList;
         private int[] _hashCodes;
         #endregion
@@ -25,10 +27,14 @@ namespace MetroMayhem.Manager
         }
 
         void Start() {
-            _pooledObjects = new List<GameObject>();
-            _prefabQueue = new Queue<int>();
+            EnemyStart();
+        }
+
+        private void EnemyStart() {
+            _pooledEnemyObjects = new List<GameObject>();
+            _prefabEnemyQueue = new Queue<int>();
             _tempList = new List<int>();
-            for (int i = 0; i < pooledAmount; i++) {
+            for (int i = 0; i < pooledEnemyAmount; i++) {
                 GameObject obj = InstantiateEnemy();
             }
         }
@@ -37,13 +43,13 @@ namespace MetroMayhem.Manager
         public GameObject GetPooledObject()
         {
             // Search for an inactive object
-            for (int i = 0; i < _pooledObjects.Count; i++) {
-                if (!_pooledObjects[i].activeInHierarchy) {
-                    return _pooledObjects[i];
+            for (int i = 0; i < _pooledEnemyObjects.Count; i++) {
+                if (!_pooledEnemyObjects[i].activeInHierarchy) {
+                    return _pooledEnemyObjects[i];
                 }
             }
             // If no inactive object is found and pool should grow, create a new object
-            if (willGrow) {
+            if (willEnemyGrow) {
                 return InstantiateEnemy();
             }
             return null;
@@ -54,19 +60,19 @@ namespace MetroMayhem.Manager
         {
             obj.SetActive(false);
             obj.transform.SetParent(this.transform);
-            _pooledObjects.Add(obj);
+            _pooledEnemyObjects.Add(obj);
         }
         
         public int GetNextPrefabID()
         {
-            if (_prefabQueue.Count == 0) ShuffleIDQueue();
-            int value = _prefabQueue.Dequeue();
+            if (_prefabEnemyQueue.Count == 0) ShuffleIDQueue();
+            int value = _prefabEnemyQueue.Dequeue();
             return value;
         }
 
         private void ShuffleIDQueue()
         {
-            if (_prefabQueue.Count != 0) return;
+            if (_prefabEnemyQueue.Count != 0) return;
             _tempList.Clear();
             for(int i = 0; i < _listOfEnemyPrefabs.Count; i++)
             {
@@ -76,7 +82,7 @@ namespace MetroMayhem.Manager
             while(_tempList.Count > 0)
             {
                 var randomIndex = Random.Range(0, _tempList.Count);
-                _prefabQueue.Enqueue(_tempList[randomIndex]);
+                _prefabEnemyQueue.Enqueue(_tempList[randomIndex]);
                 _tempList.RemoveAt(randomIndex);
             }
         }
@@ -89,7 +95,7 @@ namespace MetroMayhem.Manager
             tempEnemyAI.InitializeHashCodes(_hashCodes);
             obj.SetActive(false);
             obj.transform.SetParent(this.transform);
-            _pooledObjects.Add(obj);
+            _pooledEnemyObjects.Add(obj);
             return obj;
         }
         

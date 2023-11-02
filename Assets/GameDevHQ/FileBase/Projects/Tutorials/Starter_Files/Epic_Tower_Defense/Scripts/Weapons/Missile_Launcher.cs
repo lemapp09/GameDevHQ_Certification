@@ -10,7 +10,7 @@ namespace MetroMayhem.Weapons
     {
         #region variables
         [SerializeField]
-        private GameObject _missilePrefab; //holds the missle gameobject to clone
+        private GameObject _fireballPrefab; //prefab for the rocket
         [SerializeField]
         private GameObject[] _misslePositionsLeft; //array to hold the rocket positions on the turret
         [SerializeField]
@@ -71,21 +71,27 @@ namespace MetroMayhem.Weapons
             {
                 if (_isDual)
                 {
-                    GameObject rocketRight = Instantiate(_missilePrefab) as GameObject; //instantiate a rocket
+                    GameObject rocketRight = MissilePoolManager.Instance.GetMissile(); //instantiate a rocket
                     rocketRight.transform.parent = _misslePositionsRight[i].transform; //set the rockets parent to the missle launch position 
                     rocketRight.transform.localPosition = Vector3.zero; //set the rocket position values to zero
                     rocketRight.transform.localEulerAngles = new Vector3(0, 0, 0); //set the rotation values to be properly aligned with the rockets forward direction
                     rocketRight.transform.parent = null; //set the rocket parent to null 
-                    rocketRight.GetComponent<GameDevHQ.FileBase.Missle_Launcher_Dual_Turret.Missle.Missle>().AssignMissleRules(_launchSpeed, _power, _fuseDelay, _destroyTime); //assign missle properties
+                    rocketRight.GetComponent<GameDevHQ.FileBase.Missle_Launcher_Dual_Turret.Missle.Missle>().AssignMissleRules(_launchSpeed,
+                        _power, _fuseDelay, _destroyTime - (i * 0.2f)); //assign missle properties
                     _misslePositionsRight[i].SetActive(false); //turn off the rocket sitting in the turret to make it look like it fired 
+                    Instantiate(_fireballPrefab, transform.position + transform.forward * (27f  - i * 4.2f),
+                        Quaternion.identity); //instantiate fireball
                 }
-                GameObject rocketLeft = Instantiate(_missilePrefab) as GameObject; //instantiate a rocket
+                GameObject rocketLeft = MissilePoolManager.Instance.GetMissile(); //instantiate a rocket
                 rocketLeft.transform.parent = _misslePositionsLeft[i].transform; //set the rockets parent to the missle launch position 
                 rocketLeft.transform.localPosition = Vector3.zero; //set the rocket position values to zero
                 rocketLeft.transform.localEulerAngles = new Vector3(0, 0, 0); //set the rotation values to be properly aligned with the rockets forward direction
                 rocketLeft.transform.parent = null; //set the rocket parent to null
-                rocketLeft.GetComponent<GameDevHQ.FileBase.Missle_Launcher_Dual_Turret.Missle.Missle>().AssignMissleRules(_launchSpeed, _power, _fuseDelay, _destroyTime); //assign missle properties
+                rocketLeft.GetComponent<GameDevHQ.FileBase.Missle_Launcher_Dual_Turret.Missle.Missle>().AssignMissleRules(_launchSpeed,
+                    _power, _fuseDelay, _destroyTime - ((i * 0.2f)+ 0.1f)); //assign missle properties
                 _misslePositionsLeft[i].SetActive(false); //turn off the rocket sitting in the turret to make it look like it fired
+                Instantiate(_fireballPrefab, transform.position + transform.forward * (27f  - (i * 4.2f + 2.1f)),
+                    Quaternion.identity); //instantiate fireball
 
                 yield return new WaitForSeconds(_fireDelay); //wait for the firedelay
             }
