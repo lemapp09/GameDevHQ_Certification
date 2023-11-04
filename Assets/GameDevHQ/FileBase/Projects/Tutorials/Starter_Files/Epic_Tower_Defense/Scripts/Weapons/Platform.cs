@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using MetroMayhem.Manager;
 using UnityEngine;
 
@@ -13,7 +10,7 @@ namespace MetroMayhem.Weapons
         public int PlatformID => _platformID;
         [SerializeField] private GameObject _selectionMedallion;
         private GameObject _occupyingWeapon;
-        private bool _isOccupied, _isBlinking, _isSelected;
+        private bool _isOccupied, _isBlinking, _isSelected, _anotherPlatformSelected;
         private float _blinkInterval;
         #endregion
         
@@ -24,14 +21,14 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += DoNotBlink;
             GameManager.StopLevel += Blink;
             GameManager.RestartLevel += Blink;
-            GameManager.PlatformSelected += DoNotBlink;
-            GameManager.PlatformUnselected += Blink;
+            GameManager.PlatformSelected += AnotherPlatformSelected;
+            GameManager.PlatformUnselected += PlatformUnselected;
         }
 
         private void Update()
         {
             _blinkInterval += Time.deltaTime;
-            if (_isBlinking && !_isOccupied){
+            if (_isSelected || (_isBlinking && !_isOccupied)){
                 if (_blinkInterval >= 1) {
                     _blinkInterval = 0;
                     _selectionMedallion.SetActive(!_selectionMedallion.activeSelf);
@@ -40,10 +37,10 @@ namespace MetroMayhem.Weapons
         }
         
         private void DoNotBlink() {
-            if (!_isSelected) {
-                _selectionMedallion.SetActive(false);
-                _isBlinking = false;
-            }
+            _selectionMedallion.SetActive(false);
+            _isBlinking = false;
+            _isOccupied = false;
+            _anotherPlatformSelected = false;
         }
 
         private void Blink() {
@@ -53,11 +50,29 @@ namespace MetroMayhem.Weapons
         }
 
         private void OnMouseDown() {
-            if (!_isSelected) {
-                Debug.Log("Platform " + _platformID + " selected.");
+            if (!_isSelected && !_anotherPlatformSelected && !_isOccupied) {
+                Select();
+            }
+        }
+        
+        public void Select(){
+            if (!_isSelected && !_anotherPlatformSelected) {
                 _isSelected = true;
                 GameManager.Instance.SelectPlatform(_platformID);
             }
+        }
+
+        private void AnotherPlatformSelected() {
+            _anotherPlatformSelected = true;
+            _isBlinking = false;
+            _selectionMedallion.SetActive(false);
+        }
+
+        private void PlatformUnselected()
+        {
+            _anotherPlatformSelected = false;
+            _isSelected = false;
+            _isBlinking = true;
         }
 
         private void OnDisable() {
@@ -67,8 +82,8 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel -= DoNotBlink;
             GameManager.StopLevel -= Blink;
             GameManager.RestartLevel -= Blink;
-            GameManager.PlatformSelected -= DoNotBlink;
-            GameManager.PlatformUnselected -= Blink;
+            GameManager.PlatformSelected -= AnotherPlatformSelected;
+            GameManager.PlatformUnselected -= PlatformUnselected;
         }
     }
 }

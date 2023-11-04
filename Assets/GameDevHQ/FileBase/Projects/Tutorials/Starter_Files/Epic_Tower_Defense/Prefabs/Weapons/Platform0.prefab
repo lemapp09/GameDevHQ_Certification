@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8619351717538864945}
   - component: {fileID: 687099780386203208}
   - component: {fileID: 1767619713652894709}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SelectionMedallion
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 7849943194454521732}
   - component: {fileID: 318153459021724773}
   - component: {fileID: 4967516994911773960}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Platform0
   m_TagString: Untagged
   m_Icon: {fileID: 0}

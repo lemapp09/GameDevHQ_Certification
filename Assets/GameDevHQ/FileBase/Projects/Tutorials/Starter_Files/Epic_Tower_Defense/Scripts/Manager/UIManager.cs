@@ -14,6 +14,11 @@ namespace MetroMayhem.Manager
         
         [Header("Armory")] [SerializeField] private GameObject _armoryPanel;
         [SerializeField] private GameObject[] _armoryPieces;
+        [SerializeField] private Image[] _armoryPieceBackground;
+        [SerializeField] private Button _gatlingGunButton;
+        [SerializeField] private Button _missileLauncherButton;
+        [SerializeField] private Button _dualGatlingGunButton;
+        [SerializeField] private Button _dualMissileLauncherButton;
 
         [Header("WarFunds")] [SerializeField] private TextMeshProUGUI _warFundsText;
         [SerializeField] private TextMeshProUGUI _status;
@@ -42,6 +47,21 @@ namespace MetroMayhem.Manager
         [SerializeField] private GameObject _upgradeMissilePanel;
         [SerializeField] private GameObject _dismantleWeaponPanel;
 
+        private void Start() {
+            DisplayAffordTower();
+        }
+
+        public void DisplayAffordTower() {
+            for (int i = 0; i < _armoryPieces.Length; i++) {
+                if (GameManager.Instance.AffordTower(i))  {
+                    _armoryPieces[i].SetActive(true);
+                    _armoryPieceBackground[i].enabled = false;
+                } else {
+                    _armoryPieces[i].SetActive(false);
+                    _armoryPieceBackground[i].enabled = false;
+                }
+            }
+        }
         public void LevelComplete() {
             StartCoroutine(DelayLevelCompleteDisplay());
         }
@@ -81,6 +101,33 @@ namespace MetroMayhem.Manager
         public void FastForwardClicked()
         {
             _fastForwardImage.gameObject.SetActive(!_fastForwardImage.gameObject.activeSelf);
+        }  
+        
+        private void GatlingButtonClicked() {
+            HighlightSelectedWeapon(0);
+        }
+
+        private void MissileButtonClicked() {
+            HighlightSelectedWeapon(1);
+        }
+
+        private void DualGatlingButtonClicked() {
+            HighlightSelectedWeapon(2);
+        }
+
+        private void DualMissileButtonClicked() {
+            HighlightSelectedWeapon(3);
+        }
+
+        private void HighlightSelectedWeapon(int SelectedWeapon)
+        {
+            for (int i = 0; i < _armoryPieces.Length; i++) {
+                if (i != SelectedWeapon) {
+                    _armoryPieceBackground[i].enabled = false;
+                } else {
+                    _armoryPieceBackground[i].enabled = true;
+                }
+            }
         }
         
         public void UpdateHealth(int health)
@@ -111,13 +158,23 @@ namespace MetroMayhem.Manager
             _pauseButton.onClick.AddListener(PauseClicked);
             _playButton.onClick.AddListener(PlayClicked);
             _restartButton.onClick.AddListener(RestartClicked);
+            _gatlingGunButton.onClick.AddListener(GatlingButtonClicked);
+            _missileLauncherButton.onClick.AddListener(MissileButtonClicked);
+            _dualGatlingGunButton.onClick.AddListener(DualGatlingButtonClicked);
+            _dualMissileLauncherButton.onClick.AddListener(DualMissileButtonClicked);
         }
+
+
 
         private void OnDisable()
         {
             _pauseButton.onClick.RemoveListener(PauseClicked);
             _playButton.onClick.RemoveListener(PlayClicked);
             _restartButton.onClick.RemoveListener(RestartClicked);
+            _gatlingGunButton.onClick.RemoveListener(GatlingButtonClicked);
+            _missileLauncherButton.onClick.RemoveListener(MissileButtonClicked);
+            _dualGatlingGunButton.onClick.RemoveListener(DualGatlingButtonClicked);
+            _dualMissileLauncherButton.onClick.RemoveListener(DualMissileButtonClicked);
         }
     }
 }

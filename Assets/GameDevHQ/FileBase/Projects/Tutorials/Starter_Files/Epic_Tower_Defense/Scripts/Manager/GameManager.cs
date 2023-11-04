@@ -1,5 +1,7 @@
 
+using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace MetroMayhem.Manager
 {
@@ -51,15 +53,19 @@ namespace MetroMayhem.Manager
         public GameObject[] towerPrefabs;  // Array of Tower prefabs 
         public GameObject[] platforms;     // Array of platform gameobjects with transform positions
         public bool[] isPlatformOccupied;  // Boolean array to track if a platform is occupied
-        public int[] towerPrices = new []{200, 200, 700, 1250};  // Array of tower purchase prices
-
-        private int warFunds = 1000;       // Initialize with your starting WarFunds
-
+        public int[] _towerPrices = new []{200, 500, 700, 1250};  // Array of tower purchase prices
+        private bool _platformHasBeenSelected, _weaponSelected;
+        private int warFunds = 1000,        // Initialize with your starting WarFunds
+            _currentlySelectedPlatform = -1, _currentSelectedWeapon  = -1; // Part of weapon Purchase
         #endregion
-        
-        private void Start() {
+
+        private void OnEnable()
+        {
             Enemies.EnemyAI.EnemySurvived += EnemyHasReachedTheEnd;
             Enemies.EnemyAI.EnemyKilled += EnemyDied;
+        }
+
+        private void Start() {
             StartNextLevel();
         }
 
@@ -93,23 +99,59 @@ namespace MetroMayhem.Manager
             StopLevel?.Invoke();
         }
 
-        public void SelectPlatform(int platformIndex) {
-            PlatformSelected?.Invoke();
+        public void SelectPlatform(int platformIndex)
+        {
+            if (!_platformHasBeenSelected)
+            {
+                _platformHasBeenSelected = true;
+                _currentlySelectedPlatform = platformIndex;
+                PlatformSelected?.Invoke();
+            }
         }
 
-        public void UnselectPlatform(int platformIndex) {
+        public void UnselectPlatform(int platformIndex)
+        {
+            _platformHasBeenSelected = false;
+            _currentlySelectedPlatform = -1;
             PlatformUnselected?.Invoke();
         }
+
+        public void CurrentWeaponSelected(int WeaponID) {
+            _weaponSelected = true;
+            _currentSelectedWeapon = WeaponID;
+        }
+
+        public void CurrentWeaponUnselected(int WeaponID) {
+            _weaponSelected = false;
+            _currentSelectedWeapon = -1;
+            UIManager.Instance.DisplayAffordTower();
+        }
+
+        private void PurchaseTower()
+        {
+            if (_currentlySelectedPlatform != -1 && _currentSelectedWeapon != -1)
+            {
+                
+            }
+        }
+
+        public bool AffordTower(int TowerId) {
+            if (_towerPrices[TowerId] < _warFunds) {
+                return true;
+            }
+            return false; // (true if WarFunds is greater than or equal to the tower price, false otherwise)
+        }
+            
         public void PlaceTower(int towerIndex, int platformIndex)
         {
             if (_isPaused)
             {
                 if (platformIndex >= 0 && platformIndex < platforms.Length && !isPlatformOccupied[platformIndex])
                 {
-                    if (towerIndex >= 0 && towerIndex < towerPrefabs.Length && warFunds >= towerPrices[towerIndex])
+                    if (towerIndex >= 0 && towerIndex < towerPrefabs.Length && warFunds >= _towerPrices[towerIndex])
                     {
                         // Deduct the purchase price from WarFunds
-                        warFunds -= towerPrices[towerIndex];
+                        warFunds -= _towerPrices[towerIndex];
 
                         // Instantiate the selected Tower at the platform's position
                         Instantiate(towerPrefabs[towerIndex], platforms[platformIndex].transform.position,
