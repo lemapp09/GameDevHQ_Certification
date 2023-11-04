@@ -33,6 +33,16 @@ namespace MetroMayhem.Manager
                                               /// </summary>
         public static event restartLevel RestartLevel;
         
+        public delegate void platformSelected();  /// <summary>
+        ///  Level has ended
+        /// </summary>
+        public static event platformSelected PlatformSelected;
+        
+        public delegate void platformUnselected();  /// <summary>
+        ///  Level has ended
+        /// </summary>
+        public static event platformUnselected PlatformUnselected;
+        
             /// <summary>
             /// The four Tower/ Turret Weapons are: Gatling Gun (0),
             /// Missile Launcher (1), Dual Gatling Gun (2),
@@ -82,7 +92,14 @@ namespace MetroMayhem.Manager
         {
             StopLevel?.Invoke();
         }
-        
+
+        public void SelectPlatform(int platformIndex) {
+            PlatformSelected?.Invoke();
+        }
+
+        public void UnselectPlatform(int platformIndex) {
+            PlatformUnselected?.Invoke();
+        }
         public void PlaceTower(int towerIndex, int platformIndex)
         {
             if (_isPaused)

@@ -125,7 +125,7 @@ MonoBehaviour:
   - {fileID: 6798321941656989933}
   - {fileID: 4151053010489552229}
   _misslePositionsRight: []
-  _fireDelay: 2
+  _fireDelay: 1
   _launchSpeed: 10
   _power: 20
   _fuseDelay: 0

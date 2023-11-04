@@ -239,7 +239,7 @@ MonoBehaviour:
   _power: 20
   _fuseDelay: 0
   _reloadTime: 0
-  _destroyTime: 1
+  _destroyTime: 1.5
   _isDual: 1
   _weaponID: 3
 --- !u!135 &2034633348623873643

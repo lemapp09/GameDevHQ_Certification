@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 7267653293140864088}
   - component: {fileID: 7849943194454521732}
   - component: {fileID: 318153459021724773}
+  - component: {fileID: 4967516994911773960}
   m_Layer: 0
   m_Name: Platform0
   m_TagString: Untagged
@@ -181,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bff4452ee081e4f3db575401d179c50e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _platformID: 0
+  _platformID: 7
   _selectionMedallion: {fileID: 376435544712264295}
 --- !u!208 &318153459021724773
 NavMeshObstacle:
@@ -199,3 +200,24 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!65 &4967516994911773960
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3224402591209932079}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2, y: 3, z: 1.2}
+  m_Center: {x: 0, y: 1, z: 0}

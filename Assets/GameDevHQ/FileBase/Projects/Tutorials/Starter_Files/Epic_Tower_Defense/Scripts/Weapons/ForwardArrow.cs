@@ -33,12 +33,12 @@ namespace MetroMayhem.Weapons
         }
 
         private void OnDisable() {
-            GameManager.StartLevel += UnpauseRotation;
-            GameManager.StartPlay += PauseRotation;
-            GameManager.PauseLevel += UnpauseRotation;
-            GameManager.UnpauseLevel += PauseRotation;
-            GameManager.StopLevel += UnpauseRotation;
-            GameManager.RestartLevel += UnpauseRotation;
+            GameManager.StartLevel -= UnpauseRotation;
+            GameManager.StartPlay -= PauseRotation;
+            GameManager.PauseLevel -= UnpauseRotation;
+            GameManager.UnpauseLevel -= PauseRotation;
+            GameManager.StopLevel -= UnpauseRotation;
+            GameManager.RestartLevel -= UnpauseRotation;
         }
     }
 }

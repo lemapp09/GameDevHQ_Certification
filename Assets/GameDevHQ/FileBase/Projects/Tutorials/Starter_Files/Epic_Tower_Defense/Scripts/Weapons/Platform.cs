@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using MetroMayhem.Manager;
@@ -12,8 +13,7 @@ namespace MetroMayhem.Weapons
         public int PlatformID => _platformID;
         [SerializeField] private GameObject _selectionMedallion;
         private GameObject _occupyingWeapon;
-        private bool _isOccupied;
-        private bool _isBlinking;
+        private bool _isOccupied, _isBlinking, _isSelected;
         private float _blinkInterval;
         #endregion
         
@@ -24,6 +24,8 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += DoNotBlink;
             GameManager.StopLevel += Blink;
             GameManager.RestartLevel += Blink;
+            GameManager.PlatformSelected += DoNotBlink;
+            GameManager.PlatformUnselected += Blink;
         }
 
         private void Update()
@@ -38,22 +40,35 @@ namespace MetroMayhem.Weapons
         }
         
         private void DoNotBlink() {
-            _selectionMedallion.SetActive(false);
-            _isBlinking = false;
+            if (!_isSelected) {
+                _selectionMedallion.SetActive(false);
+                _isBlinking = false;
+            }
         }
 
         private void Blink() {
             _isBlinking = true;
+            _isSelected = false;
             _blinkInterval = 1f;
         }
 
+        private void OnMouseDown() {
+            if (!_isSelected) {
+                Debug.Log("Platform " + _platformID + " selected.");
+                _isSelected = true;
+                GameManager.Instance.SelectPlatform(_platformID);
+            }
+        }
+
         private void OnDisable() {
-            GameManager.StartLevel += Blink;
-            GameManager.StartPlay += DoNotBlink;
-            GameManager.PauseLevel += Blink;
-            GameManager.UnpauseLevel += DoNotBlink;
-            GameManager.StopLevel += Blink;
-            GameManager.RestartLevel += Blink;
+            GameManager.StartLevel -= Blink;
+            GameManager.StartPlay -= DoNotBlink;
+            GameManager.PauseLevel -= Blink;
+            GameManager.UnpauseLevel -= DoNotBlink;
+            GameManager.StopLevel -= Blink;
+            GameManager.RestartLevel -= Blink;
+            GameManager.PlatformSelected -= DoNotBlink;
+            GameManager.PlatformUnselected -= Blink;
         }
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 using ProjectDawn.Navigation.Hybrid;
 using Unity.Mathematics;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace MetroMayhem.Enemies
@@ -29,6 +30,7 @@ namespace MetroMayhem.Enemies
         [SerializeField] private AudioMixerGroup _mixerGroup;
         private AudioSource _audioSource;
         
+        [FormerlySerializedAs("_dissolveSpeed")]
         [Header("Dissolve")]
         [Tooltip("Time in seconds for full dissolve")]
         [SerializeField] private float _dissolveSpeed; // 10 for Large, 3 for small
@@ -36,7 +38,7 @@ namespace MetroMayhem.Enemies
         public float _dissolveAmount = 1.0f;
         
         [Header("Health")]
-        [SerializeField] private float _health = 100f;
+        [SerializeField] private float _health = 100f, _dissolveRate;
         
         private bool _isHit, _isDead, _isPaused, _isAttacking;
         private int _idlesHash, _hitsHash, _deathsHash, _idealNumberHash, _deathHash, _hitHash, _speedHash,
@@ -74,7 +76,7 @@ namespace MetroMayhem.Enemies
             StartCoroutine(CheckDistance());
             // Dissolve Initialize
             if (_dissolveSpeed > 0) {
-                _dissolveSpeed = 1 / _dissolveSpeed;
+                _dissolveRate = 1 / _dissolveSpeed;
             }
             _dissolveAmmountID = Shader.PropertyToID("_DissolveAmount");
             InitializeAudioSource();
@@ -232,16 +234,25 @@ namespace MetroMayhem.Enemies
         {
             SkinnedMeshRenderer[] _parts = GetComponentsInChildren<SkinnedMeshRenderer>(); 
             yield return  new WaitForSeconds(animLength);
+            Material[] temp = new Material[_parts.Length];
+            for (int i = 0; i < _parts.Length; i++) {
+                temp[i] = _parts[i].material;
+            }
             foreach (var part in _parts) {
                 part.material = _DissovleMaterial;
             }
             while (_dissolveAmount > 0) {
-                _dissolveAmount -= Time.deltaTime * _dissolveSpeed ;  
+                _dissolveAmount -= Time.deltaTime * _dissolveRate ;  
                 foreach (var part in _parts) {
                     part.material.SetFloat(_dissolveAmmountID, _dissolveAmount);
                 }
                 yield return new WaitForSeconds(Time.deltaTime);
             }
+            for (int i = 0; i < _parts.Length; i++) {
+                _parts[i].material = temp[i] ;
+            }
+            _anim.SetFloat(_speedHash, 0f);
+            _agent.Stop();
             PoolManager.Instance.ReturnToPool(this.gameObject);
         }
 

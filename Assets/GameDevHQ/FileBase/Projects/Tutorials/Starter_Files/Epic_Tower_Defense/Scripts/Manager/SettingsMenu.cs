@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
@@ -11,26 +8,32 @@ namespace MetroMayhem.Manager
     {
         [SerializeField] private AudioMixer _audioMixer;
         [SerializeField] private Slider _masterVolumeSilder, _musicVolumeSLider, _sfxVolumeSlider, _cameraControlSpeed;
-        [SerializeField] private Button _closeButton, _genreButton1, _genreButton2, _genreButton3, _genreButton4;
-        [SerializeField] private GameObject _mainCanvas, _settingsCanvas;
+        [SerializeField] private Button _closeButton, _genreButton1, _genreButton2, _genreButton3, _genreButton4, _howTo;
+        [SerializeField] private GameObject _mainCanvas, _settingsCanvas, _howToCanvas;
     
-        private void Start() {
-            InitializeSliders();
+        private void OnEnable() {
+            if (_audioMixer.GetFloat(Constants.MasterVolume, out var masterVolume) ) {
+                _masterVolumeSilder.value = MixerToSliderValue(masterVolume);
+            } if (_audioMixer.GetFloat(Constants.MusicVolume, out var musicVolume) ) {
+                _musicVolumeSLider.value = MixerToSliderValue(musicVolume);
+            } if (_audioMixer.GetFloat(Constants.SFXVolume, out var sfxVolume) ) {
+                _sfxVolumeSlider.value = MixerToSliderValue(sfxVolume);
+            }
+            _cameraControlSpeed.value = 1; //CameraController.Instance.GetCameraControlSpeed();
             SubscribeToEvents();
         }
 
-        private void OnDestroy()
-        {
+        private void OnDestroy() {
             UnsubscribeFromEvents();
         }
 
-        private void SubscribeToEvents()
-        {
+        private void SubscribeToEvents() {
             _closeButton.onClick.AddListener(OnCloseClicked);
             _genreButton1.onClick.AddListener(OnGenre1Clicked);
             _genreButton2.onClick.AddListener(OnGenre2Clicked);
             _genreButton3.onClick.AddListener(OnGenre3Clicked);
             _genreButton4.onClick.AddListener(OnGenre4Clicked);
+            _howTo.onClick.AddListener(OnHowToClicked);
             _masterVolumeSilder.onValueChanged.AddListener(OnMasterVolumeChanged);
             _musicVolumeSLider.onValueChanged.AddListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
@@ -53,9 +56,15 @@ namespace MetroMayhem.Manager
             AudioManager.Instance.PlayPeacefulMusic();
         }
 
+        private void OnHowToClicked() {
+            _howToCanvas.SetActive(true);
+            _settingsCanvas.SetActive(false);
+        }
+
         private void OnCameraSpeedChanged(float arg0) {
             // CameraController.Instance.SetCameraSpeed(arg0);
         }
+        
         private void UnsubscribeFromEvents()
         {
             _closeButton.onClick.RemoveListener(OnCloseClicked);
@@ -63,13 +72,13 @@ namespace MetroMayhem.Manager
             _genreButton2.onClick.RemoveListener(OnGenre2Clicked);
             _genreButton3.onClick.RemoveListener(OnGenre3Clicked);
             _genreButton4.onClick.RemoveListener(OnGenre4Clicked);
+            _howTo.onClick.RemoveListener(OnHowToClicked);
             _masterVolumeSilder.onValueChanged.RemoveListener(OnMasterVolumeChanged);
             _musicVolumeSLider.onValueChanged.RemoveListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.RemoveListener(OnSFXVolumeChanged);
             _cameraControlSpeed.onValueChanged.RemoveListener(OnSFXVolumeChanged);
-
         }
-        
+
         private void OnMasterVolumeChanged(float sliderValue) {
             _audioMixer.SetFloat(Constants.MasterVolume, SliderToMixerValue(sliderValue));
         }
@@ -82,36 +91,17 @@ namespace MetroMayhem.Manager
             _audioMixer.SetFloat(Constants.SFXVolume, SliderToMixerValue(sliderValue));
         }
 
-        private void InitializeSliders()
-        {
-            if (_audioMixer.GetFloat(Constants.MasterVolume, out var masterVolume) )
-            {
-                _masterVolumeSilder.value = MixerToSliderValue(masterVolume);
-            }
-            if (_audioMixer.GetFloat(Constants.MusicVolume, out var musicVolume) )
-            {
-                _musicVolumeSLider.value = MixerToSliderValue(masterVolume);
-            }
-            if (_audioMixer.GetFloat(Constants.SFXVolume, out var sfxVolume) )
-            {
-                _sfxVolumeSlider.value = MixerToSliderValue(sfxVolume);
-            }
-
-            _cameraControlSpeed.value = 1; //CameraController.Instance.GetCameraControlSpeed();
-        }
         private void OnCloseClicked() {
             _mainCanvas.SetActive(true);
             _settingsCanvas.SetActive(false);
         }
 
-        private float MixerToSliderValue(float mixerValue)
-        {
+        private float MixerToSliderValue(float mixerValue) {
             return Mathf.InverseLerp(-80, 20, mixerValue);
         }
 
 
-        private float SliderToMixerValue(float sliderValue)
-        {
+        private float SliderToMixerValue(float sliderValue) {
             return Mathf.Lerp(-80, 20, sliderValue);
         }
     }
