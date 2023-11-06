@@ -10161,6 +10161,7 @@ GameObject:
   - component: {fileID: 2754012176883064231}
   - component: {fileID: 4820192580487372566}
   - component: {fileID: 3880621568016016238}
+  - component: {fileID: 8926299518277038014}
   m_Layer: 0
   m_Name: Dual_Gatling_Gun
   m_TagString: Untagged
@@ -10363,6 +10364,19 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &8926299518277038014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3787378071199022422}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c910722b82f49b9886048b694fc078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponID: 2
 --- !u!1 &4120024312957935849
 GameObject:
   m_ObjectHideFlags: 0
@@ -20350,7 +20364,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8325121711373650792
 Transform:
   m_ObjectHideFlags: 0
@@ -25400,7 +25414,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &7969333914695755250
 Transform:
   m_ObjectHideFlags: 0
@@ -25553,7 +25567,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1569220459849026832
 Transform:
   m_ObjectHideFlags: 0

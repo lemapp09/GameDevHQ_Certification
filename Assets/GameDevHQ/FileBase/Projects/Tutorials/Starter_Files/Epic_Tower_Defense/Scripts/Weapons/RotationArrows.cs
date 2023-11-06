@@ -12,6 +12,7 @@ namespace MetroMayhem.Weapons
         [SerializeField] private bool _isLeft;
         [SerializeField] private SpriteRenderer _spriteRenderer;
         [SerializeField] private Collider _collider;
+        private MetroMayhemInputSystem _inputSystem;
 
         
         private void OnEnable()
@@ -25,7 +26,8 @@ namespace MetroMayhem.Weapons
             if (_collider == null) {
                 _collider = GetComponent<Collider>();
             }
-
+            _inputSystem = new MetroMayhemInputSystem();
+            _inputSystem.Towers.Enable();
             GameManager.StartLevel += UnPauseRotation;
             GameManager.StartPlay += PauseRotation;
             GameManager.PauseLevel += UnPauseRotation;
@@ -33,9 +35,16 @@ namespace MetroMayhem.Weapons
             GameManager.StopLevel += UnPauseRotation;
             GameManager.RestartLevel += UnPauseRotation;
         }
+
         private void OnMouseDown() {
-            _spriteRenderer.color = Color.red;
-            _iWeaponToRotate.Rotate(_isLeft);
+                if (_inputSystem.Towers.Upgrade.IsPressed()) {
+                    _iWeaponToRotate.Upgrade();
+                } else if (_inputSystem.Towers.Dismantle.IsPressed()) {
+                    _iWeaponToRotate.Dismantle();
+                } else  {
+                    _spriteRenderer.color = Color.red;
+                    _iWeaponToRotate.Rotate(_isLeft);
+                }
         }
 
         private void OnMouseUp() {
@@ -52,7 +61,9 @@ namespace MetroMayhem.Weapons
             _collider.enabled = true;
         }
 
-        private void OnDisable() {
+        private void OnDisable()
+        {
+            _inputSystem.Towers.Disable();
             GameManager.StartLevel -= UnPauseRotation;
             GameManager.StartPlay -= PauseRotation;
             GameManager.PauseLevel -= UnPauseRotation;

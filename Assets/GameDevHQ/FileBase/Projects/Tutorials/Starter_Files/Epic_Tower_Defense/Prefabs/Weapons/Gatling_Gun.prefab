@@ -593,6 +593,7 @@ GameObject:
   - component: {fileID: 5493150660714433143}
   - component: {fileID: 5649990085902939429}
   - component: {fileID: 8302424302198620613}
+  - component: {fileID: 2096514881213403434}
   m_Layer: 0
   m_Name: Gatling_Gun
   m_TagString: Untagged
@@ -732,6 +733,7 @@ MonoBehaviour:
   Muzzle_Flash: {fileID: 7823894831791513452}
   bulletCasings: {fileID: 3808145898482626077}
   fireSound: {fileID: 8300000, guid: 08e0cb88300e54b09aa0deb684c3a3de, type: 3}
+  _platformID: 0
   _weaponID: 0
 --- !u!135 &5649990085902939429
 SphereCollider:
@@ -771,6 +773,19 @@ MonoBehaviour:
   _enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &2096514881213403434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4483016502998064957}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94c910722b82f49b9886048b694fc078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponID: 0
 --- !u!1 &5047885608711103638
 GameObject:
   m_ObjectHideFlags: 0

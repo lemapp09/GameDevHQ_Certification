@@ -233,6 +233,24 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Upgrade"",
+                    ""type"": ""Button"",
+                    ""id"": ""6b873a18-717a-46af-99c8-43377686c64c"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Dismantle"",
+                    ""type"": ""Button"",
+                    ""id"": ""7d13a6d4-6e22-43d7-8807-705a5b730f84"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -268,6 +286,28 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
                     ""action"": ""Movement"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""19fe75ea-9a48-4c82-ab85-acb4f98286d2"",
+                    ""path"": ""<Keyboard>/#(U)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Upgrade"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""892a59b7-dc61-4b91-be6c-84f8c34cfeea"",
+                    ""path"": ""<Keyboard>/#(X)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Dismantle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -283,6 +323,8 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         m_Towers_Fire = m_Towers.FindAction("Fire", throwIfNotFound: true);
         m_Towers_Place = m_Towers.FindAction("Place", throwIfNotFound: true);
         m_Towers_Movement = m_Towers.FindAction("Movement", throwIfNotFound: true);
+        m_Towers_Upgrade = m_Towers.FindAction("Upgrade", throwIfNotFound: true);
+        m_Towers_Dismantle = m_Towers.FindAction("Dismantle", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -401,6 +443,8 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
     private readonly InputAction m_Towers_Fire;
     private readonly InputAction m_Towers_Place;
     private readonly InputAction m_Towers_Movement;
+    private readonly InputAction m_Towers_Upgrade;
+    private readonly InputAction m_Towers_Dismantle;
     public struct TowersActions
     {
         private @MetroMayhemInputSystem m_Wrapper;
@@ -408,6 +452,8 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         public InputAction @Fire => m_Wrapper.m_Towers_Fire;
         public InputAction @Place => m_Wrapper.m_Towers_Place;
         public InputAction @Movement => m_Wrapper.m_Towers_Movement;
+        public InputAction @Upgrade => m_Wrapper.m_Towers_Upgrade;
+        public InputAction @Dismantle => m_Wrapper.m_Towers_Dismantle;
         public InputActionMap Get() { return m_Wrapper.m_Towers; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -426,6 +472,12 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
             @Movement.started += instance.OnMovement;
             @Movement.performed += instance.OnMovement;
             @Movement.canceled += instance.OnMovement;
+            @Upgrade.started += instance.OnUpgrade;
+            @Upgrade.performed += instance.OnUpgrade;
+            @Upgrade.canceled += instance.OnUpgrade;
+            @Dismantle.started += instance.OnDismantle;
+            @Dismantle.performed += instance.OnDismantle;
+            @Dismantle.canceled += instance.OnDismantle;
         }
 
         private void UnregisterCallbacks(ITowersActions instance)
@@ -439,6 +491,12 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
             @Movement.started -= instance.OnMovement;
             @Movement.performed -= instance.OnMovement;
             @Movement.canceled -= instance.OnMovement;
+            @Upgrade.started -= instance.OnUpgrade;
+            @Upgrade.performed -= instance.OnUpgrade;
+            @Upgrade.canceled -= instance.OnUpgrade;
+            @Dismantle.started -= instance.OnDismantle;
+            @Dismantle.performed -= instance.OnDismantle;
+            @Dismantle.canceled -= instance.OnDismantle;
         }
 
         public void RemoveCallbacks(ITowersActions instance)
@@ -466,5 +524,7 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         void OnFire(InputAction.CallbackContext context);
         void OnPlace(InputAction.CallbackContext context);
         void OnMovement(InputAction.CallbackContext context);
+        void OnUpgrade(InputAction.CallbackContext context);
+        void OnDismantle(InputAction.CallbackContext context);
     }
 }

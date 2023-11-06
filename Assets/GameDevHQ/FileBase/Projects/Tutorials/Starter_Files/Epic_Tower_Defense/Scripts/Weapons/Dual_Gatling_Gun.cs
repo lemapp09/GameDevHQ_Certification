@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using MetroMayhem.Enemies;
 using MetroMayhem.Manager;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using Random = UnityEngine.Random;
@@ -71,8 +68,12 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel += PauseGun;
+            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
         }
-
+        
+        public void SetPlatformID(int PlatformId) {
+            _platformID = PlatformId;
+        }
         void Start()
         {
             _muzzleFlash[0].SetActive(false); //setting the initial state of the muzzle flash effect to off
@@ -177,6 +178,20 @@ namespace MetroMayhem.Weapons
             transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
         }
 
+        public void Upgrade()
+        {
+            if (_isPaused) {
+                GameManager.Instance.UpgradeTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
+        }
+
+        public void Dismantle()
+        {
+            if (_isPaused) {
+                GameManager.Instance.DismantleTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
+        }
+
         // Method to rotate gun barrel 
         void RotateBarrel()
         {
@@ -189,16 +204,18 @@ namespace MetroMayhem.Weapons
         }
 
         private void OnMouseDown() {
+            if (_isPaused) {
+                if (_input.Towers.Upgrade.IsPressed()) {
+                    Upgrade();
+                } else if (_input.Towers.Dismantle.IsPressed()) {
+                    Dismantle();
+                }
+            }
             _isFiring = true;
         }
 
         private void OnMouseUp() {
             _isFiring = false;
-        }
-
-        private void OnMouseDrag()
-        {
-            //
         }
 
         private void OnDisable()

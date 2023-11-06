@@ -33,12 +33,12 @@ namespace MetroMayhem.Weapons
         private MetroMayhemInputSystem _input;
         private bool _isFiring;
 
-        private int _platformID;
+        public int _platformID;
         [SerializeField] public int _weaponID;
         private bool _isPaused;
         private int _damageAmount;
         private float _tempRotY;
-        private float _health;
+        private float _health = 100;
         #endregion
         
         private void OnEnable()
@@ -47,12 +47,20 @@ namespace MetroMayhem.Weapons
             _input = new MetroMayhemInputSystem();
             _input.Towers.Enable();
             _tempRotY= transform.localRotation.eulerAngles.y;
+            if (_tempRotY < 0) {
+                _tempRotY += 360;
+            }
             GameManager.StartLevel += PauseGun;
             GameManager.StartPlay += UnpauseGun;
             GameManager.PauseLevel += PauseGun;
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel -= PauseGun;
+            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
+        }
+
+        public void SetPlatformID(int PlatformId) {
+            _platformID = PlatformId;
         }
         
         // Use this for initialization
@@ -126,6 +134,19 @@ namespace MetroMayhem.Weapons
             transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
         }
 
+        public void Upgrade()
+        {
+            if (_isPaused) {
+                GameManager.Instance.UpgradeTower( this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
+        }
+
+        public void Dismantle() {
+            if (_isPaused) {
+                GameManager.Instance.DismantleTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
+        }
+
 
         private void OnDisable()
         {
@@ -146,19 +167,21 @@ namespace MetroMayhem.Weapons
             _isPaused = false;
         }
 
-        private void OnMouseDown()
-        {
+        private void OnMouseDown() {
+            if (_isPaused) {
+                if (_input.Towers.Upgrade.IsPressed()) {
+                    Upgrade();
+                }
+                if (_input.Towers.Dismantle.IsPressed()) {
+                    Dismantle();
+                }
+            }
             _isFiring = true;
         }
 
         private void OnMouseUp()
         {
             _isFiring = false;
-        }
-
-        private void OnMouseDrag()
-        {
-            //
         }
 
     }

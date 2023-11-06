@@ -1,7 +1,5 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using GameDevHQ.FileBase.Missle_Launcher_Dual_Turret.Missle;
 using MetroMayhem.Manager;
 
 namespace MetroMayhem.Weapons
@@ -52,7 +50,13 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel += PauseGun;
+            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
         }
+        
+        public void SetPlatformID(int PlatformId) {
+            _platformID = PlatformId;
+        }
+        
         private void Update()
         {
             if (!_isPaused)
@@ -131,16 +135,20 @@ namespace MetroMayhem.Weapons
             }
             transform.localRotation = Quaternion.Euler(0, tempRotY, 0);
         }
-        
-        private void OnDisable() {
-            GameManager.StartLevel -= PauseGun;
-            GameManager.StartPlay -= UnpauseGun;
-            GameManager.PauseLevel -= PauseGun;
-            GameManager.UnpauseLevel -= UnpauseGun;
-            GameManager.StopLevel -= PauseGun;
-            GameManager.RestartLevel -= PauseGun;
+
+        public void Upgrade()
+        {
+            if (_isPaused) {
+                GameManager.Instance.UpgradeTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
         }
 
+        public void Dismantle()
+        {
+            if (_isPaused) {
+                GameManager.Instance.DismantleTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
+            }
+        }
         private void PauseGun() {
             _isPaused = true;
         }
@@ -150,12 +158,31 @@ namespace MetroMayhem.Weapons
         }
 
         private void OnMouseDown() {
+            if (_isPaused) {
+                if (_input.Towers.Upgrade.IsPressed()) {
+                    Upgrade();
+                }
+                if (_input.Towers.Dismantle.IsPressed()) {
+                    Dismantle();
+                }
+            }
+
             _isFiring = true;
         }
 
         private void OnMouseUp() {
             _isFiring = false;
         }
+
+        private void OnDisable() {
+            GameManager.StartLevel -= PauseGun;
+            GameManager.StartPlay -= UnpauseGun;
+            GameManager.PauseLevel -= PauseGun;
+            GameManager.UnpauseLevel -= UnpauseGun;
+            GameManager.StopLevel -= PauseGun;
+            GameManager.RestartLevel -= PauseGun;
+        }
+
     }
 }
 

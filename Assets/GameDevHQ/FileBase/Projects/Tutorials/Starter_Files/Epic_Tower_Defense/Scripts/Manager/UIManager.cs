@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using MetroMayhem.Weapons;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -41,11 +42,27 @@ namespace MetroMayhem.Manager
         private GameObject _levelStatusPanel;
         [SerializeField] private TextMeshProUGUI _levelStatusText;
 
-        [Header("Weapon Options")] [SerializeField]
-        private GameObject _upgradeGunPanel;
+        [Header("Weapon Options")]
+        [SerializeField] private GameObject _purchasePanel;
+        [SerializeField] private TMP_Text _purchaseText;
+        [SerializeField] private Button _purchaseYesButton;
+        [SerializeField] private Button _purchaseNoButton;
+        private int _purchasePlatformID, _purchaseWeaponID;
+        
+        [SerializeField] private GameObject _upgradeGunPanel;
+        [SerializeField] private Button _upgradeGunYesButton;
+        [SerializeField] private Button _upgradeGunNoButton;
 
         [SerializeField] private GameObject _upgradeMissilePanel;
+        [SerializeField] private Button _upgradeMissileYesButton;
+        [SerializeField] private Button _upgradeMissileNoButton;
+        private int _upgradePlatformID, _upgradeWeaponID;
+        
         [SerializeField] private GameObject _dismantleWeaponPanel;
+        [SerializeField] private TextMeshProUGUI _dismantlePriceText;
+        [SerializeField] private Button _dismantleYesButton;
+        [SerializeField] private Button _dismantleNoButton;
+        private int _dismantlePlatformID, _dismantleWeaponID;
 
         private void Start() {
             DisplayAffordTower();
@@ -128,6 +145,68 @@ namespace MetroMayhem.Manager
                     _armoryPieceBackground[i].enabled = true;
                 }
             }
+            GameManager.Instance.CurrentWeaponSelected(SelectedWeapon);
+        }
+
+        public void DisplayPurchasePanel(int PlatformID, int WeaponID, int PurchasePrice)
+        {
+            _purchasePlatformID = PlatformID;
+            _purchaseWeaponID = WeaponID;
+            _purchasePanel.SetActive(true);
+            _purchaseText.text = PurchasePrice.ToString();
+        }
+
+        public void RemovePurchasePanel() {
+            _purchasePanel.SetActive(false);
+        }
+
+        private void PurchaseYesButtonClicked() {
+            RemovePurchasePanel();
+            GameManager.Instance.PlaceTower(_purchasePlatformID, _purchaseWeaponID);
+        }
+
+        private void PurchaseNoButtonClicked() {
+            RemovePurchasePanel();
+            GameManager.Instance.CurrentWeaponUnselected();
+            GameManager.Instance.UnselectPlatform();
+        }
+
+        public void DisplayUpgradePanel(int platformID, int weaponID) {
+            _upgradePlatformID = platformID;
+            _upgradeWeaponID = weaponID;
+            if (weaponID == 0) {
+                _upgradeGunPanel.SetActive(true);
+            }   else  {
+                _upgradeMissilePanel.SetActive(true);
+            }
+        }
+
+        private void UpgradeYes() {
+            _upgradeGunPanel.SetActive(false);
+            _upgradeMissilePanel.SetActive(false);
+            GameManager.Instance.UpgradeYes(_upgradePlatformID, _upgradeWeaponID);
+        }
+
+        public void DisplayDismantlePanel(int platformID, int weaponID, int price)
+        {
+            _dismantlePlatformID  = platformID;
+            _dismantleWeaponID = weaponID;
+            _dismantlePriceText.text = price.ToString();
+            _dismantleWeaponPanel.SetActive(true);
+        }
+
+        private void DismantleYes() {
+            _dismantleWeaponPanel.SetActive(false);
+            GameManager.Instance.DismantleYes(_dismantlePlatformID, _dismantleWeaponID);
+        }
+
+        private void DismantleNo() {
+            _dismantleWeaponPanel.SetActive(false);
+        }
+        
+        private void UpgradeNo() {
+            _upgradeGunPanel.SetActive(false);
+            _upgradeMissilePanel.SetActive(false);
         }
         
         public void UpdateHealth(int health)
@@ -138,6 +217,7 @@ namespace MetroMayhem.Manager
         public void UpdateWarFunds(int funds)
         {
             _warFundsText.text = funds.ToString();
+            DisplayAffordTower();
         }
 
         public void UpdateLevelCount(int level) {
@@ -162,9 +242,15 @@ namespace MetroMayhem.Manager
             _missileLauncherButton.onClick.AddListener(MissileButtonClicked);
             _dualGatlingGunButton.onClick.AddListener(DualGatlingButtonClicked);
             _dualMissileLauncherButton.onClick.AddListener(DualMissileButtonClicked);
+            _purchaseYesButton.onClick.AddListener(PurchaseYesButtonClicked);
+            _purchaseNoButton.onClick.AddListener(PurchaseNoButtonClicked);
+            _upgradeGunYesButton.onClick.AddListener(UpgradeYes);
+            _upgradeGunNoButton.onClick.AddListener(UpgradeNo);
+            _upgradeMissileYesButton.onClick.AddListener(UpgradeYes);
+            _upgradeMissileNoButton.onClick.AddListener(UpgradeNo);
+            _dismantleYesButton.onClick.AddListener(DismantleYes);
+            _dismantleNoButton.onClick.AddListener(DismantleNo);
         }
-
-
 
         private void OnDisable()
         {
@@ -175,6 +261,14 @@ namespace MetroMayhem.Manager
             _missileLauncherButton.onClick.RemoveListener(MissileButtonClicked);
             _dualGatlingGunButton.onClick.RemoveListener(DualGatlingButtonClicked);
             _dualMissileLauncherButton.onClick.RemoveListener(DualMissileButtonClicked);
+            _purchaseYesButton.onClick.RemoveListener(PurchaseYesButtonClicked);
+            _purchaseNoButton.onClick.RemoveListener(PurchaseNoButtonClicked);
+            _upgradeGunYesButton.onClick.RemoveListener(UpgradeYes);
+            _upgradeGunNoButton.onClick.RemoveListener(UpgradeNo);
+            _upgradeMissileYesButton.onClick.RemoveListener(UpgradeYes);
+            _upgradeMissileNoButton.onClick.RemoveListener(UpgradeNo);
+            _dismantleYesButton.onClick.RemoveListener(DismantleYes);
+            _dismantleNoButton.onClick.RemoveListener(DismantleNo);
         }
     }
 }

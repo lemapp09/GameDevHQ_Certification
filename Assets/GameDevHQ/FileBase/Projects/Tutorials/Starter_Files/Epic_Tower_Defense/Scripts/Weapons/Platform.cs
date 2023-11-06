@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using MetroMayhem.Manager;
 using UnityEngine;
 
@@ -9,12 +10,15 @@ namespace MetroMayhem.Weapons
         [SerializeField] private int _platformID;
         public int PlatformID => _platformID;
         [SerializeField] private GameObject _selectionMedallion;
+        [SerializeField] private float _defaultAngle;
+        [SerializeField] private Collider _boxCollider;
         private GameObject _occupyingWeapon;
         private bool _isOccupied, _isBlinking, _isSelected, _anotherPlatformSelected;
         private float _blinkInterval;
         #endregion
         
         private void OnEnable() {
+            _boxCollider.enabled = true;
             GameManager.StartLevel += Blink;
             GameManager.StartPlay += DoNotBlink;
             GameManager.PauseLevel += Blink;
@@ -27,11 +31,15 @@ namespace MetroMayhem.Weapons
 
         private void Update()
         {
-            _blinkInterval += Time.deltaTime;
-            if (_isSelected || (_isBlinking && !_isOccupied)){
-                if (_blinkInterval >= 1) {
-                    _blinkInterval = 0;
-                    _selectionMedallion.SetActive(!_selectionMedallion.activeSelf);
+            if (!_isOccupied) {
+                _blinkInterval += Time.deltaTime;
+                if (_isSelected || _isBlinking)
+                {
+                    if (_blinkInterval >= 1)
+                    {
+                        _blinkInterval = 0;
+                        _selectionMedallion.SetActive(!_selectionMedallion.activeSelf);
+                    }
                 }
             }
         }
@@ -39,7 +47,6 @@ namespace MetroMayhem.Weapons
         private void DoNotBlink() {
             _selectionMedallion.SetActive(false);
             _isBlinking = false;
-            _isOccupied = false;
             _anotherPlatformSelected = false;
         }
 
@@ -75,6 +82,23 @@ namespace MetroMayhem.Weapons
             _isBlinking = true;
         }
 
+        public float WhatIsTheDefaulAngle() {
+            return _defaultAngle;
+        }
+
+        public void SetAsOccupied(GameObject OccupyingWeapon) {
+            _isOccupied = true;
+            _boxCollider.enabled = false;
+            _occupyingWeapon = OccupyingWeapon;
+            _selectionMedallion.SetActive(false);
+        }
+
+        public void RemoveOccupyingWeapon() {
+            _isOccupied = false;
+            _boxCollider.enabled = true;
+            Destroy(_occupyingWeapon);
+        }
+        
         private void OnDisable() {
             GameManager.StartLevel -= Blink;
             GameManager.StartPlay -= DoNotBlink;
