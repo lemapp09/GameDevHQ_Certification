@@ -33,9 +33,8 @@ public class MissilePoolManager : MonoSingleton<MissilePoolManager>
         // If no inactive object is found and pool should grow, create a new object
         if (willMissileGrow) {
             GameObject obj = Instantiate(objectPrefab);
-            obj.SetActive(false);
-            objectPool.Enqueue(obj);
-            return InstantiateMissile();
+            obj.SetActive(true);
+            return obj;
         }
         return null;
     }

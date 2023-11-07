@@ -7,8 +7,7 @@ namespace MetroMayhem.Weapons
     public class Platform : MonoBehaviour
     {
         #region Variables
-        [SerializeField] private int _platformID;
-        public int PlatformID => _platformID;
+        [SerializeField] private int _platformID, _weaponID;
         [SerializeField] private GameObject _selectionMedallion;
         [SerializeField] private float _defaultAngle;
         [SerializeField] private Collider _boxCollider;
@@ -86,17 +85,28 @@ namespace MetroMayhem.Weapons
             return _defaultAngle;
         }
 
-        public void SetAsOccupied(GameObject OccupyingWeapon) {
+        public void SetAsOccupied(GameObject OccupyingWeapon, int weaponID) {
+            _weaponID  = weaponID;
             _isOccupied = true;
             _boxCollider.enabled = false;
             _occupyingWeapon = OccupyingWeapon;
             _selectionMedallion.SetActive(false);
         }
 
+        public int GetWeaponID() {
+            return _weaponID;
+        }
+
+        public GameObject GetOccupyingWeapon() {
+            return _occupyingWeapon;
+        }
+
         public void RemoveOccupyingWeapon() {
             _isOccupied = false;
             _boxCollider.enabled = true;
-            Destroy(_occupyingWeapon);
+            if ( _occupyingWeapon != null) {
+                Destroy(_occupyingWeapon);
+            }
         }
         
         private void OnDisable() {

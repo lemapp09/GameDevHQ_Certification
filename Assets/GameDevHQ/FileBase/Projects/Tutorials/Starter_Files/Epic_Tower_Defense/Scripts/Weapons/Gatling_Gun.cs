@@ -66,12 +66,14 @@ namespace MetroMayhem.Weapons
         // Use this for initialization
         void Start()
         {
+            #region Variables
             _gunBarrel = GameObject.Find("Barrel_to_Spin").GetComponent<Transform>(); //assigning the transform of the gun barrel to the variable
             Muzzle_Flash.SetActive(false); //setting the initial state of the muzzle flash effect to off
             _audioSource = GetComponent<AudioSource>(); //ssign the Audio Source to the reference variable
             _audioSource.playOnAwake = false; //disabling play on awake
             _audioSource.loop = true; //making sure our sound effect loops
             _audioSource.clip = fireSound; //assign the clip to play
+            #endregion
         }
 
         // Update is called once per frame
@@ -91,7 +93,7 @@ namespace MetroMayhem.Weapons
                         _startWeaponNoise =
                             false; //set the start weapon noise value to false to prevent calling it again
                     }
-
+                    FireAtEnemy();
                 }
                 else if (!_isFiring) //Check for left click (release) user input
                 {
@@ -101,6 +103,25 @@ namespace MetroMayhem.Weapons
                 }
             }
         }
+
+        private void FireAtEnemy()
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                // Generate a random direction within the spread angle
+                Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
+                Quaternion randomRotation = Random.rotation;
+                fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
+                RaycastHit hit;
+                // Cast the ray in the calculated direction
+                if (Physics.Raycast(transform.position, fireRotation * Vector3.forward, out hit, 7f, 1<<6)) {
+                    if (hit.collider.CompareTag("Enemy")) {
+                        hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+                    }
+                }
+            }
+        }
+        
 
         // Method to rotate gun barrel 
         void RotateBarrel() 

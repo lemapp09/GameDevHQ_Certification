@@ -1,16 +1,11 @@
-
-using System;
 using MetroMayhem.Weapons;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace MetroMayhem.Manager
 {
     public class GameManager : MonoSingleton<GameManager>
     {
         #region Variables
-        [SerializeField] private int _playerHealth, _warFunds = 350, _health = 100; // Initialize with your starting WarFunds
-        private bool _isPaused;
         public delegate void startLevel();  //The Level Begins
         public static event startLevel StartLevel;
         public delegate void startPlay();  //The Level Begins
@@ -26,14 +21,10 @@ namespace MetroMayhem.Manager
                                               /// </summary>
         public static event restartLevel RestartLevel;
         
-        public delegate void platformSelected();  /// <summary>
-        ///  Level has ended
-        /// </summary>
+        public delegate void platformSelected();  
         public static event platformSelected PlatformSelected;
         
-        public delegate void platformUnselected();  /// <summary>
-        ///  Level has ended
-        /// </summary>
+        public delegate void platformUnselected();  
         public static event platformUnselected PlatformUnselected;
         
             /// <summary>
@@ -41,19 +32,29 @@ namespace MetroMayhem.Manager
             /// Missile Launcher (1), Dual Gatling Gun (2),
             /// Dual Missile Launcher (3)
             /// </summary>
-        public GameObject[] towerPrefabs;  // Array of Tower prefabs 
-        public GameObject[] platforms;     // Array of platform gameobjects with transform positions
-        public bool[] isPlatformOccupied;  // Boolean array to track if a platform is occupied
-        public int[] _towerPrices = new []{200, 500, 700, 1250};  // Array of tower purchase prices
-        private bool _platformHasBeenSelected, _weaponSelected;
+        [SerializeField] private GameObject[] towerPrefabs;  // Array of Tower prefabs 
+        [SerializeField] private GameObject[] platforms;     // Array of platform gameobjects with transform positions
+        [SerializeField] private int[] _towerPrices = new []{200, 500, 700, 1250};  // Array of tower purchase prices
+        
+        private bool[] isPlatformOccupied;  // Boolean array to track if a platform is occupied
+        [SerializeField] private int _warFunds = 350, _health = 100, _currentLevel = 1; // Initialize with your starting WarFunds
         private int PlatformID = -1, WeaponID  = -1; // Part of weapon Purchase
+        private int _archiveWarFunds, _archiveHealth;
+        private bool[] _archivePlatOccup;
+        private int[]  _archiveWeaponID;
+        private Vector3[] _archiveWeaponRotation;
+        
+        private bool _isPaused;
+        private bool _platformHasBeenSelected, _weaponSelected;
         #endregion
 
-        private void OnEnable()
-        {
+        private void OnEnable() {
             Enemies.EnemyAI.EnemySurvived += EnemyHasReachedTheEnd;
             Enemies.EnemyAI.EnemyKilled += EnemyDied;
             isPlatformOccupied = new bool[platforms.Length];
+            _archivePlatOccup = new bool[platforms.Length];
+            _archiveWeaponID = new int[platforms.Length];
+            _archiveWeaponRotation = new Vector3[platforms.Length];
         }
 
         private void Start() {
@@ -61,9 +62,48 @@ namespace MetroMayhem.Manager
         }
 
         public void StartNextLevel() {
+            // Archive  _warFunds, _isPlatformOccupied, weaponIDs[platformID], transform of each weapon
+            _health = 100; PlatformID = -1; WeaponID  = -1;
+            UIManager.Instance.UpdateHealth(_health);
             UIManager.Instance.UpdateWarFunds(_warFunds);
+            UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nSTARTING");
             _isPaused = true;
             StartLevel?.Invoke();
+            ArchiveLevelData();
+        }
+
+        public void ArchiveLevelData() {
+            _archiveWarFunds = _warFunds;
+            _archiveHealth = _health;
+            for (int i = 0; i < platforms.Length; i++) { 
+                _archivePlatOccup[i] = isPlatformOccupied[i];
+                _archiveWeaponID[i] = platforms[i].GetComponent<Platform>().GetWeaponID();
+                if ( platforms[i].GetComponent<Platform>().GetOccupyingWeapon() != null ) {
+                    _archiveWeaponRotation[i] = 
+                        platforms[i].GetComponent<Platform>().GetOccupyingWeapon().transform
+                        .eulerAngles;
+                } else  {
+                    _archiveWeaponRotation[i] = Vector3.zero;
+                }
+            }
+        }
+
+        public void RestoreLevel()
+        {
+            _warFunds = _archiveWarFunds;
+            _health = _archiveHealth;
+            for (int i = 0; i < platforms.Length; i++) { 
+                isPlatformOccupied[i] = _archivePlatOccup[i];
+                if (_archivePlatOccup[i]) {
+                    platforms[i].GetComponent<Platform>().SetAsOccupied(towerPrefabs[_archiveWeaponID[i]], _archiveWeaponID[i]);
+                    platforms[i].GetComponent<Platform>().GetOccupyingWeapon().transform.eulerAngles = _archiveWeaponRotation[i];
+                } else  {
+                    platforms[i].GetComponent<Platform>().RemoveOccupyingWeapon();
+                }
+            }
+            UIManager.Instance.UpdateHealth(_health);
+            UIManager.Instance.UpdateWarFunds(_warFunds);
+            _isPaused = true;
         }
 
         public void StartPlayGame() {
@@ -81,12 +121,26 @@ namespace MetroMayhem.Manager
             UnpauseLevel?.Invoke();
         }
 
-        public void RestartCurrentLevel() {
+        public void AllEnemyKilled() {  // Win
+            UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nWON");
+            StopCurrentLevel();
+            _currentLevel++;
+            if (_currentLevel > 10) {
+                Debug.Log("You Won the Game!");
+            }
+            Invoke(nameof(StartNextLevel), 7f);
+        }
+
+        public void RestartCurrentLevel() {  // Lose
+            UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nLOST");
+            RestoreLevel();
             _isPaused = false;
+            UIManager.Instance.ResetFastForward();
             RestartLevel?.Invoke();
         }
 
         public void StopCurrentLevel() {
+            UIManager.Instance.ResetFastForward();
             StopLevel?.Invoke();
         }
 
@@ -163,7 +217,7 @@ namespace MetroMayhem.Manager
                         
                         // Mark the platform as occupied
                         isPlatformOccupied[PlacementPlatformID] = true;
-                        platforms[PlacementPlatformID].GetComponent<Platform>().SetAsOccupied(obj);
+                        platforms[PlacementPlatformID].GetComponent<Platform>().SetAsOccupied(obj, PlacementWeaponID);
                     }
                 }
             }
@@ -203,6 +257,9 @@ namespace MetroMayhem.Manager
         private void EnemyHasReachedTheEnd() { // EnemySurvived;
             _health--;
             UIManager.Instance.UpdateHealth(_health);
+            if(_health <= 0) {
+                StopCurrentLevel();
+            }
         }
 
         private void EnemyDied()

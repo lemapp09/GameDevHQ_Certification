@@ -1,15 +1,14 @@
 using System;
 using System.Collections;
-using MetroMayhem.Weapons;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace MetroMayhem.Manager
 {
     public class UIManager : MonoSingleton<UIManager>
     {
+        #region Variables
         [Header("Restart")] [SerializeField] private Button _restartButton;
         [SerializeField] private GameObject _restartImage;
         
@@ -32,7 +31,8 @@ namespace MetroMayhem.Manager
         [SerializeField] private Image _fastForwardImage;
         [SerializeField] private Button _fastForwardButton;
         [SerializeField] private Button _SettingsBuitton;
-        private bool _isPaused;
+        private bool _isPaused, _blinkPlayImage;
+        private float _blinkInterval;
         
         [Header("Health Level")] [SerializeField]
         private TextMeshProUGUI _healthText;
@@ -63,9 +63,19 @@ namespace MetroMayhem.Manager
         [SerializeField] private Button _dismantleYesButton;
         [SerializeField] private Button _dismantleNoButton;
         private int _dismantlePlatformID, _dismantleWeaponID;
-
+        #endregion
         private void Start() {
             DisplayAffordTower();
+        }
+
+        private void Update() {
+            if (_blinkPlayImage) {
+                _blinkInterval += Time.deltaTime;
+                if (_blinkInterval >= 1) {
+                    _playImage.gameObject.SetActive(!_playImage.gameObject.activeSelf);
+                    _blinkInterval = 0;
+                }
+            }
         }
 
         public void DisplayAffordTower() {
@@ -79,16 +89,24 @@ namespace MetroMayhem.Manager
                 }
             }
         }
-        public void LevelComplete() {
-            StartCoroutine(DelayLevelCompleteDisplay());
+        
+        public void LevelDisplay(string message) {
+            StartCoroutine(DelayLevelCompleteDisplay(message));
         }
 
-        private IEnumerator DelayLevelCompleteDisplay()
-        {
+        private IEnumerator DelayLevelCompleteDisplay(string DisplayMessage) {
             _levelStatusPanel.SetActive(true);
-            _levelStatusText.text = "Level Complete!";
-            yield return new WaitForSeconds(15f);
+            _levelStatusText.text = DisplayMessage;
+            yield return new WaitForSeconds(5f);
             _levelStatusPanel.SetActive(false);
+        }
+
+        private void Blink() {
+            _blinkPlayImage = true;
+        }
+
+        private void DoNotBlink() {
+            _blinkPlayImage = false;
         }
 
         public void RestartClicked() {
@@ -96,8 +114,7 @@ namespace MetroMayhem.Manager
             StartCoroutine(ResetUI());
         }
 
-        public void PauseClicked()
-        {
+        public void PauseClicked() {
             if (_isPaused) {
                 _isPaused = false;
                 _pauseImage.gameObject.SetActive(false); 
@@ -109,16 +126,22 @@ namespace MetroMayhem.Manager
             }
         }
 
-        public void PlayClicked()
-        {
-            _playImage.gameObject.SetActive(!_playImage.gameObject.activeSelf);
+        public void PlayClicked() {
+            _playImage.gameObject.SetActive(true);
             Manager.GameManager.Instance.StartPlayGame();
         }
 
-        public void FastForwardClicked()
-        {
-            _fastForwardImage.gameObject.SetActive(!_fastForwardImage.gameObject.activeSelf);
-        }  
+        public void FastForwardClicked() {  // 
+            if (!_blinkPlayImage) {
+                _fastForwardImage.gameObject.SetActive(!_fastForwardImage.gameObject.activeSelf);
+                Time.timeScale = Time.timeScale == 1 ? 2 : 1;
+            }
+        }
+
+        public void ResetFastForward() {
+            _fastForwardImage.gameObject.SetActive(false);
+            Time.timeScale = 1;
+        }
         
         private void GatlingButtonClicked() {
             HighlightSelectedWeapon(0);
@@ -237,6 +260,7 @@ namespace MetroMayhem.Manager
             _levelStatusPanel.SetActive(false);
             _pauseButton.onClick.AddListener(PauseClicked);
             _playButton.onClick.AddListener(PlayClicked);
+            _fastForwardButton.onClick.AddListener(FastForwardClicked);
             _restartButton.onClick.AddListener(RestartClicked);
             _gatlingGunButton.onClick.AddListener(GatlingButtonClicked);
             _missileLauncherButton.onClick.AddListener(MissileButtonClicked);
@@ -250,12 +274,15 @@ namespace MetroMayhem.Manager
             _upgradeMissileNoButton.onClick.AddListener(UpgradeNo);
             _dismantleYesButton.onClick.AddListener(DismantleYes);
             _dismantleNoButton.onClick.AddListener(DismantleNo);
+            GameManager.StartLevel += Blink;
+            GameManager.StartPlay += DoNotBlink;
         }
 
         private void OnDisable()
         {
             _pauseButton.onClick.RemoveListener(PauseClicked);
             _playButton.onClick.RemoveListener(PlayClicked);
+            _fastForwardButton.onClick.RemoveListener(FastForwardClicked);
             _restartButton.onClick.RemoveListener(RestartClicked);
             _gatlingGunButton.onClick.RemoveListener(GatlingButtonClicked);
             _missileLauncherButton.onClick.RemoveListener(MissileButtonClicked);
@@ -269,6 +296,8 @@ namespace MetroMayhem.Manager
             _upgradeMissileNoButton.onClick.RemoveListener(UpgradeNo);
             _dismantleYesButton.onClick.RemoveListener(DismantleYes);
             _dismantleNoButton.onClick.RemoveListener(DismantleNo);
+            GameManager.StartLevel -= Blink;
+            GameManager.StartPlay -= DoNotBlink;
         }
     }
 }

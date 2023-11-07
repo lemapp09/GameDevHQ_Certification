@@ -93,6 +93,10 @@ namespace MetroMayhem.Enemies
             _speedCheckTimer = 0f; _speedCheckInterval = 0.1f;
             _unfreezeCharacter = 0f; _unfreezeInterval = 1.0f;
             _unfreePosition = Vector3.zero;
+            if (_agent == null) {
+                _agent = GetComponent<AgentAuthoring>();
+            }
+            _agent.enabled = true;
         }
 
         private void Unpause() { 
@@ -123,7 +127,6 @@ namespace MetroMayhem.Enemies
             yield return new WaitForSeconds(Time.deltaTime);
             _isAttacking = false;
         }
-        
         
         void Update() {
             if (!_isPaused && !_isAttacking && !_isHit && !_isDead)

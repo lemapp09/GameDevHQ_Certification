@@ -32,8 +32,7 @@ namespace MetroMayhem.Weapons
 
         [SerializeField]
         private ParticleSystem[] _bulletCasings; //reference to the bullet casing effect to play when firing
-
-        [SerializeField] private GameObject _bulletPrefab; //reference to the bullet prefab to instantiate
+        
         [SerializeField] private AudioClip _fireSound; //Reference to the audio clip
 
         [SerializeField] private AudioMixerGroup _mixerGroup;
@@ -93,7 +92,6 @@ namespace MetroMayhem.Weapons
             {
                 if (_isFiring) //Check for left click (held) user input
                 {
-                    Debug.Log("Is Firing!");
                     RotateBarrel(); //Call the rotation function responsible for rotating our gun barrel
 
                     //for loop to iterate through all muzzle flash objects
@@ -125,25 +123,18 @@ namespace MetroMayhem.Weapons
             }
         }
 
-        private void FireBullet(int i)
-        {
-            // Instantiate(_bulletPrefab, _firePoint[i].position, _firePoint[i].rotation); //instantiate the bullet prefab
-            // Raycast forward to see what object(s) the bullet will hit
-            RaycastHit hit;
-            if (visibleTargets.Count > 0)
-            {
-                Vector3 direction = visibleTargets[i].position -
-                                    visibleTargets[Random.Range(0, visibleTargets.Count - 1)].position;
-                if (Physics.Raycast(_firePoint[i].position, direction, out hit))
-                {
-                    DamageEnemy(hit);
-                }
-            }
-            else
-            {
-                if (Physics.Raycast(_firePoint[i].position, _firePoint[i].forward, out hit))
-                {
-                    DamageEnemy(hit);
+        private void FireBullet(int j) {
+            for (int i = 0; i < 6; i++) {
+                // Generate a random direction within the spread angle
+                Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
+                Quaternion randomRotation = Random.rotation;
+                fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
+                RaycastHit hit;
+                // Cast the ray in the calculated direction
+                if (Physics.Raycast(_firePoint[j].position, fireRotation * Vector3.forward, out hit, 7f, 1 << 6)) {
+                    if (hit.collider.CompareTag("Enemy")) {
+                        hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+                    }
                 }
             }
         }

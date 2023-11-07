@@ -265,9 +265,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'LEVEL
+  m_text: 'LEVEL   1
 
-    COMPLETE'
+    START'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 7c1ea264f85074fd3b5799475810f539, type: 2}
   m_sharedMaterial: {fileID: -1065005595164280682, guid: 7c1ea264f85074fd3b5799475810f539,
@@ -303,7 +303,7 @@ MonoBehaviour:
   m_fontSizeMax: 72
   m_fontStyle: 0
   m_HorizontalAlignment: 2
-  m_VerticalAlignment: 256
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0
@@ -4807,6 +4807,7 @@ MonoBehaviour:
   _playerHealth: 100
   _warFunds: 5000
   _health: 100
+  _currentLevel: 1
   towerPrefabs:
   - {fileID: 4483016502998064957, guid: 1a3b03713db254e28afaf5a0132a0997, type: 3}
   - {fileID: 690610485643192979, guid: 4e400368bb7f94660b86de99da9f8915, type: 3}
@@ -10056,7 +10057,7 @@ MonoBehaviour:
   _playButton: {fileID: 886784621}
   _fastForwardImage: {fileID: 230579420}
   _fastForwardButton: {fileID: 705591167}
-  _SettingsBuitton: {fileID: 705591167}
+  _SettingsBuitton: {fileID: 362258598}
   _healthText: {fileID: 783571179}
   _levelCountText: {fileID: 640746104}
   _levelStatusPanel: {fileID: 909662579}

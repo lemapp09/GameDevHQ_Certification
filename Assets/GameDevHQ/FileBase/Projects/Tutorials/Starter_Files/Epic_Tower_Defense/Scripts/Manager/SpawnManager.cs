@@ -63,6 +63,10 @@ namespace MetroMayhem.Manager
                     temp.GameObject().GetComponent<Enemies.EnemyAI>().InitializeVariables();
                     _currentEnemyToSpawn++;
                 }
+                if (gameObject.transform.childCount == 0) {
+                        GameManager.Instance.AllEnemyKilled();
+                        _isLevelOver = true;
+                }
                 _timeToNextSpawn -= Time.deltaTime;
                 yield return new WaitForSeconds(0.1f);
             }
@@ -81,12 +85,15 @@ namespace MetroMayhem.Manager
         private void RePoolEnemies()
         {
             List<GameObject> temp = new List<GameObject>();
-            foreach (Transform child in transform)
+            if (temp.Count > 0)
             {
-                temp.Add(child.gameObject);
-                child.gameObject.SetActive(false);
-                child.gameObject.transform.SetParent(PoolManager.Instance.transform);
-                child.gameObject.transform.position = GenerateSpawnPoint();
+                foreach (Transform child in transform)
+                {
+                    temp.Add(child.gameObject);
+                    child.gameObject.SetActive(false);
+                    child.gameObject.transform.SetParent(PoolManager.Instance.transform);
+                    child.gameObject.transform.position = GenerateSpawnPoint();
+                }
             }
         }
 
