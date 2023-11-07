@@ -29,8 +29,7 @@ namespace MetroMayhem.Weapons
         private MetroMayhemInputSystem _input;
         private bool _isFiring;
         [SerializeField] private bool _isDual;
-
-        private int _platformID;
+        
         [SerializeField] private int _weaponID;
         private bool _isPaused;
         private int _damageAmount;
@@ -50,18 +49,13 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel += PauseGun;
-            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
-        }
-        
-        public void SetPlatformID(int PlatformId) {
-            _platformID = PlatformId;
         }
         
         private void Update()
         {
             if (!_isPaused)
             {
-                if (_isFiring && _launched == false) //check for space key and if we launched the rockets
+                if (_isFiring && _launched == false) //check for left mouse click and if we launched the rockets
                 {
                     _launched = true; //set the launch bool to true
                     StartCoroutine(FireRocketsRoutine()); //start a coroutine that fires the rockets. 
@@ -151,6 +145,7 @@ namespace MetroMayhem.Weapons
         }
         private void PauseGun() {
             _isPaused = true;
+            _isFiring = false;
         }
 
         private void UnpauseGun() {
@@ -165,9 +160,9 @@ namespace MetroMayhem.Weapons
                 if (_input.Towers.Dismantle.IsPressed()) {
                     Dismantle();
                 }
+            } else {
+                _isFiring = true;
             }
-
-            _isFiring = true;
         }
 
         private void OnMouseUp() {

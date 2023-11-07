@@ -11,9 +11,9 @@ namespace MetroMayhem.Manager
     public class SpawnManager : MonoSingleton<SpawnManager>
     {
         private List<GameObject> _listOfEnemyPrefabs;
-        [SerializeField] private int _howManyEnemyToSPawn;
-        private int _currentEnemyToSpawn;
-        [SerializeField] private float _timeBetweenSpawns;
+        [SerializeField] private int _howManyEnemyToSPawn, howManyEnemyToSpawn;
+        [SerializeField] private int _currentEnemyToSpawn, _currentLevel;
+        [SerializeField] private float _timeBetweenSpawns, timeBetweenSpawns;
         [SerializeField] private bool _isLevelOver;
         private float _timeToNextSpawn = -1f;   // Seeds the Spawn countdown to Spawn immediately
 
@@ -21,12 +21,20 @@ namespace MetroMayhem.Manager
         /// Connects to events
         /// </summary>
         private void OnEnable() {
-            GameManager.StartLevel += StopSpawningEnemies;
+            GameManager.StartLevel += StartNewLevel;
             GameManager.StartPlay += StartSpawningEnemies;
             GameManager.PauseLevel += StopSpawningEnemies;
             GameManager.UnpauseLevel += StartSpawningEnemies;
             GameManager.StopLevel += RePoolEnemies;
             GameManager.RestartLevel += RePoolEnemies;
+        }
+        
+        public void StartNewLevel()
+        {
+            _currentEnemyToSpawn = 0;
+            _currentLevel = GameManager.Instance.GetCurrentLevel();
+            _isLevelOver = false;
+            StopSpawningEnemies();
         }
         
         /// <summary>
@@ -52,9 +60,11 @@ namespace MetroMayhem.Manager
         /// </summary>
         private IEnumerator Spawn()
         {
+            float timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * 0.01f;
+            int howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * 20;
             while (!_isLevelOver) {
-                if (_timeToNextSpawn < 0f && _currentEnemyToSpawn < _howManyEnemyToSPawn) {
-                    _timeToNextSpawn = _timeBetweenSpawns;
+                if (_timeToNextSpawn < 0f && _currentEnemyToSpawn < howManyEnemyToSpawn) {
+                    _timeToNextSpawn = timeBetweenSpawns;
                     GameObject temp = PoolManager.Instance.GetPooledObject();
                     temp.transform.position = GenerateSpawnPoint();
                     temp.transform.SetParent(this.transform);
@@ -84,6 +94,7 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void RePoolEnemies()
         {
+            _isLevelOver = true;
             List<GameObject> temp = new List<GameObject>();
             if (temp.Count > 0)
             {
@@ -102,7 +113,7 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void OnDisable()
         {
-            GameManager.StartLevel -= StopSpawningEnemies;
+            GameManager.StartLevel -= StartNewLevel;
             GameManager.StartPlay -= StartSpawningEnemies;
             GameManager.PauseLevel -= StopSpawningEnemies;
             GameManager.UnpauseLevel -= StartSpawningEnemies;

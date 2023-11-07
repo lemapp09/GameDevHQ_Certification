@@ -31,11 +31,9 @@ namespace MetroMayhem.Weapons
         private AudioSource _audioSource; //reference to the audio source component
         private bool _startWeaponNoise = true;
         private MetroMayhemInputSystem _input;
-        private bool _isFiring;
-
-        public int _platformID;
+        
         [SerializeField] public int _weaponID;
-        private bool _isPaused;
+        [SerializeField] private bool _isPaused, _isFiring;
         private int _damageAmount;
         private float _tempRotY;
         private float _health = 100;
@@ -56,24 +54,17 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel -= PauseGun;
-            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
-        }
-
-        public void SetPlatformID(int PlatformId) {
-            _platformID = PlatformId;
         }
         
         // Use this for initialization
         void Start()
         {
-            #region Variables
             _gunBarrel = GameObject.Find("Barrel_to_Spin").GetComponent<Transform>(); //assigning the transform of the gun barrel to the variable
             Muzzle_Flash.SetActive(false); //setting the initial state of the muzzle flash effect to off
             _audioSource = GetComponent<AudioSource>(); //ssign the Audio Source to the reference variable
             _audioSource.playOnAwake = false; //disabling play on awake
             _audioSource.loop = true; //making sure our sound effect loops
             _audioSource.clip = fireSound; //assign the clip to play
-            #endregion
         }
 
         // Update is called once per frame
@@ -104,26 +95,26 @@ namespace MetroMayhem.Weapons
             }
         }
 
-        private void FireAtEnemy()
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                // Generate a random direction within the spread angle
-                Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
-                Quaternion randomRotation = Random.rotation;
-                fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
-                RaycastHit hit;
-                // Cast the ray in the calculated direction
-                if (Physics.Raycast(transform.position, fireRotation * Vector3.forward, out hit, 7f, 1<<6)) {
-                    if (hit.collider.CompareTag("Enemy")) {
-                        hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+        private void FireAtEnemy() {
+            if (!_isPaused) {
+                for (int i = 0; i < 3; i++) {
+                    // Generate a random direction within the spread angle
+                    Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
+                    Quaternion randomRotation = Random.rotation;
+                    fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
+                    RaycastHit hit;
+                    // Cast the ray in the calculated direction
+                    if (Physics.Raycast(transform.position, fireRotation * Vector3.forward, out hit, 7f, 1 << 6)) {
+                        if (hit.collider.CompareTag("Enemy")) {
+                            hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+                        }
                     }
                 }
             }
         }
         
-
         // Method to rotate gun barrel 
+        
         void RotateBarrel() 
         {
             _gunBarrel.transform.Rotate(Vector3.forward * Time.deltaTime * -500.0f); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
@@ -167,8 +158,7 @@ namespace MetroMayhem.Weapons
                 GameManager.Instance.DismantleTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
             }
         }
-
-
+        
         private void OnDisable()
         {
             GameManager.StartLevel -= UnpauseGun;
@@ -178,13 +168,12 @@ namespace MetroMayhem.Weapons
             GameManager.RestartLevel -= PauseGun;
         }
 
-        private void PauseGun()
-        {
+        private void PauseGun() {
             _isPaused = true;
+            _isFiring = false;
         }
 
-        private void UnpauseGun()
-        {
+        private void UnpauseGun() {
             _isPaused = false;
         }
 
@@ -196,12 +185,12 @@ namespace MetroMayhem.Weapons
                 if (_input.Towers.Dismantle.IsPressed()) {
                     Dismantle();
                 }
+            } else {
+                _isFiring = true;
             }
-            _isFiring = true;
         }
 
-        private void OnMouseUp()
-        {
+        private void OnMouseUp() {
             _isFiring = false;
         }
 

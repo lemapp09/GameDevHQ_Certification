@@ -144,6 +144,10 @@ namespace MetroMayhem.Manager
             StopLevel?.Invoke();
         }
 
+        public int GetCurrentLevel() {
+            return _currentLevel;
+        }
+
         public void SelectPlatform(int platformIndex)
         {
             if (!_platformHasBeenSelected)

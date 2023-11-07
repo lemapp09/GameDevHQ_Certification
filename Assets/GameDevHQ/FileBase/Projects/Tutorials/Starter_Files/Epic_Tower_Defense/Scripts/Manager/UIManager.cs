@@ -30,7 +30,8 @@ namespace MetroMayhem.Manager
         [SerializeField] private Button _playButton;
         [SerializeField] private Image _fastForwardImage;
         [SerializeField] private Button _fastForwardButton;
-        [SerializeField] private Button _SettingsBuitton;
+        [SerializeField] private Button _settingsBuitton;
+        [SerializeField] private GameObject _settingsPanel;
         private bool _isPaused, _blinkPlayImage;
         private float _blinkInterval;
         
@@ -124,6 +125,11 @@ namespace MetroMayhem.Manager
                 _pauseImage.gameObject.SetActive(true); 
                 Manager.GameManager.Instance.PauseCurrentLevel();
             }
+        }
+
+        private void DisplaySettings() {
+            Manager.GameManager.Instance.PauseCurrentLevel();
+            _settingsPanel.SetActive(true);
         }
 
         public void PlayClicked() {
@@ -260,6 +266,7 @@ namespace MetroMayhem.Manager
             _levelStatusPanel.SetActive(false);
             _pauseButton.onClick.AddListener(PauseClicked);
             _playButton.onClick.AddListener(PlayClicked);
+            _settingsBuitton.onClick.AddListener(DisplaySettings);
             _fastForwardButton.onClick.AddListener(FastForwardClicked);
             _restartButton.onClick.AddListener(RestartClicked);
             _gatlingGunButton.onClick.AddListener(GatlingButtonClicked);
@@ -282,6 +289,7 @@ namespace MetroMayhem.Manager
         {
             _pauseButton.onClick.RemoveListener(PauseClicked);
             _playButton.onClick.RemoveListener(PlayClicked);
+            _settingsBuitton.onClick.RemoveListener(DisplaySettings);
             _fastForwardButton.onClick.RemoveListener(FastForwardClicked);
             _restartButton.onClick.RemoveListener(RestartClicked);
             _gatlingGunButton.onClick.RemoveListener(GatlingButtonClicked);

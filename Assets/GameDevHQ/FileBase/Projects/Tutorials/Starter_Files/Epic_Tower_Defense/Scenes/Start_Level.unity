@@ -4804,10 +4804,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f804cd61b6d6e4535b28bc4de4ebd251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerHealth: 100
-  _warFunds: 5000
-  _health: 100
-  _currentLevel: 1
   towerPrefabs:
   - {fileID: 4483016502998064957, guid: 1a3b03713db254e28afaf5a0132a0997, type: 3}
   - {fileID: 690610485643192979, guid: 4e400368bb7f94660b86de99da9f8915, type: 3}
@@ -4838,8 +4834,10 @@ MonoBehaviour:
   - {fileID: 931009760}
   - {fileID: 527943973}
   - {fileID: 1378581481}
-  isPlatformOccupied: 
   _towerPrices: c8000000f4010000bc020000e2040000
+  _warFunds: 5000
+  _health: 100
+  _currentLevel: 1
 --- !u!4 &245398329
 Transform:
   m_ObjectHideFlags: 0
@@ -7293,6 +7291,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 245398328}
+        m_TargetAssemblyTypeName: MetroMayhem.Manager.GameManager, Assembly-CSharp
+        m_MethodName: UnpauseCurrentLevel
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10057,7 +10067,8 @@ MonoBehaviour:
   _playButton: {fileID: 886784621}
   _fastForwardImage: {fileID: 230579420}
   _fastForwardButton: {fileID: 705591167}
-  _SettingsBuitton: {fileID: 362258598}
+  _settingsBuitton: {fileID: 362258598}
+  _settingsPanel: {fileID: 1831321164}
   _healthText: {fileID: 783571179}
   _levelCountText: {fileID: 640746104}
   _levelStatusPanel: {fileID: 909662579}
@@ -20485,8 +20496,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b0a59cc6cb744783bf20a0a7d08b99a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _howManyEnemyToSPawn: 150
-  _timeBetweenSpawns: 0.2
+  _howManyEnemyToSPawn: 130
+  howManyEnemyToSpawn: 0
+  _currentEnemyToSpawn: 0
+  _currentLevel: 0
+  _timeBetweenSpawns: 0.21
+  timeBetweenSpawns: 0
   _isLevelOver: 0
 --- !u!4 &1284850371
 Transform:

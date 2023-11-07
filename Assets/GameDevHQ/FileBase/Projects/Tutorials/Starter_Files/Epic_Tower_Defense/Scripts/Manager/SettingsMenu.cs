@@ -92,6 +92,10 @@ namespace MetroMayhem.Manager
         }
 
         private void OnCloseClicked() {
+            if (Manager.GameManager.Instance != null) {
+                Manager.GameManager.Instance.UnpauseCurrentLevel();
+            }
+
             _mainCanvas.SetActive(true);
             _settingsCanvas.SetActive(false);
         }

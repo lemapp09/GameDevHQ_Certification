@@ -45,7 +45,6 @@ namespace MetroMayhem.Weapons
                 for (int i = 0; i < numColliders; i++)
                 {
                     enemyHit[i].GetComponent<Enemies.EnemyAI>().Attack();
-                    Debug.Log("Enemy Hit: " + enemyHit[i].name);
                     _weapon.Damage(1);
                 }
                 _timeBetweenRaycasts = 0;

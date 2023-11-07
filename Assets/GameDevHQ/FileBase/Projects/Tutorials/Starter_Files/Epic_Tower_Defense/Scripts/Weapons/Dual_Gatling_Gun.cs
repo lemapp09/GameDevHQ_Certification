@@ -46,9 +46,7 @@ namespace MetroMayhem.Weapons
         public LayerMask obstacleMask;
         public List<Transform> visibleTargets = new List<Transform>();
 
-        private bool _isFiring;
-        private bool _isPaused;
-        private int _platformID;
+        [SerializeField] private bool _isFiring,  _isPaused;
         [SerializeField] private int _weaponID;
         private int _damageAmount;
         private float _tempRotY;
@@ -67,12 +65,8 @@ namespace MetroMayhem.Weapons
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
             GameManager.RestartLevel += PauseGun;
-            _platformID = this.transform.GetComponent<WeaponID>().GetPlatformID();
         }
-        
-        public void SetPlatformID(int PlatformId) {
-            _platformID = PlatformId;
-        }
+ 
         void Start()
         {
             _muzzleFlash[0].SetActive(false); //setting the initial state of the muzzle flash effect to off
@@ -86,37 +80,29 @@ namespace MetroMayhem.Weapons
         }
 
         // Update is called once per frame
-        void Update()
-        {
-            if (!_isPaused)
-            {
-                if (_isFiring) //Check for left click (held) user input
-                {
+        void Update() {
+            if (!_isPaused) {
+                if (_isFiring) {//Check for left click (held) user input
                     RotateBarrel(); //Call the rotation function responsible for rotating our gun barrel
 
                     //for loop to iterate through all muzzle flash objects
-                    for (int i = 0; i < _muzzleFlash.Length; i++)
-                    {
+                    for (int i = 0; i < _muzzleFlash.Length; i++) {
                         _muzzleFlash[i].SetActive(true); //enable muzzle effect particle effect
                         _bulletCasings[i].Emit(1); //Emit the bullet casing particle effect  
                         FireBullet(i);
                     }
 
-                    if (_startWeaponNoise == true) //checking if we need to start the gun sound
-                    {
+                    if (_startWeaponNoise == true) {//checking if we need to start the gun sound
                         _audioSource.Play(); //play audio clip attached to audio source
                         _startWeaponNoise =
                             false; //set the start weapon noise value to false to prevent calling it again
                     }
                 }
-                else if (!_isFiring) //Check for left click (release) user input
-                {
+                else if (!_isFiring) {//Check for left click (release) user input
                     //for loop to iterate through all muzzle flash objects
-                    for (int i = 0; i < _muzzleFlash.Length; i++)
-                    {
+                    for (int i = 0; i < _muzzleFlash.Length; i++) {
                         _muzzleFlash[i].SetActive(false); //enable muzzle effect particle effect
                     }
-
                     _audioSource.Stop(); //stop the sound effect from playing
                     _startWeaponNoise = true; //set the start weapon noise value to true
                 }
@@ -124,16 +110,18 @@ namespace MetroMayhem.Weapons
         }
 
         private void FireBullet(int j) {
-            for (int i = 0; i < 6; i++) {
-                // Generate a random direction within the spread angle
-                Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
-                Quaternion randomRotation = Random.rotation;
-                fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
-                RaycastHit hit;
-                // Cast the ray in the calculated direction
-                if (Physics.Raycast(_firePoint[j].position, fireRotation * Vector3.forward, out hit, 7f, 1 << 6)) {
-                    if (hit.collider.CompareTag("Enemy")) {
-                        hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+            if (!_isPaused) {
+                for (int i = 0; i < 6; i++) {
+                    // Generate a random direction within the spread angle
+                    Quaternion fireRotation = Quaternion.LookRotation(transform.forward);
+                    Quaternion randomRotation = Random.rotation;
+                    fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
+                    RaycastHit hit;
+                    // Cast the ray in the calculated direction
+                    if (Physics.Raycast(_firePoint[j].position, fireRotation * Vector3.forward, out hit, 7f, 1 << 6)) {
+                        if (hit.collider.CompareTag("Enemy")) {
+                            hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
+                        }
                     }
                 }
             }
@@ -198,11 +186,13 @@ namespace MetroMayhem.Weapons
             if (_isPaused) {
                 if (_input.Towers.Upgrade.IsPressed()) {
                     Upgrade();
-                } else if (_input.Towers.Dismantle.IsPressed()) {
+                }
+                if (_input.Towers.Dismantle.IsPressed()) {
                     Dismantle();
                 }
+            } else {
+                _isFiring = true;
             }
-            _isFiring = true;
         }
 
         private void OnMouseUp() {
@@ -219,13 +209,12 @@ namespace MetroMayhem.Weapons
             GameManager.RestartLevel -= PauseGun;
         }
 
-        private void PauseGun()
-        {
+        private void PauseGun() {
             _isPaused = true;
+            _isFiring = false;
         }
 
-        private void UnpauseGun()
-        {
+        private void UnpauseGun() {
             _isPaused = false;
         }
 
