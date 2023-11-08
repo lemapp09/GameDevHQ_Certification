@@ -171,6 +171,7 @@ namespace MetroMayhem.Weapons
         private void PauseGun() {
             _isPaused = true;
             _isFiring = false;
+            Muzzle_Flash.SetActive(false);
         }
 
         private void UnpauseGun() {

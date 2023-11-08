@@ -94,14 +94,14 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void RePoolEnemies()
         {
-            Debug.Log("Reached RePool Enemies");
-            Debug.Log("Enemy Children count: " + transform.childCount);
             _isLevelOver = true;
+            List<GameObject> temp = new List<GameObject>();
             foreach (Transform child in this.transform) {
-                Debug.Log("Re-Pooling " + child.name  +" in Re-Pooling Process of Spawn Manager. (" + 
-                          transform.childCount + " children in total)");
                 child.gameObject.transform.position = GenerateSpawnPoint();
-                PoolManager.Instance.ReturnToPool(child.gameObject);
+                temp.Add(child.gameObject);
+            }
+            for (int i = 0; i < temp.Count; i++){
+                PoolManager.Instance.ReturnToPool(temp[i]);
             }
             _currentEnemyToSpawn = 0;
         }

@@ -44,7 +44,7 @@ namespace MetroMayhem.Manager
         private int[]  _archiveWeaponID;
         private Vector3[] _archiveWeaponRotation;
         
-        private bool _isPaused;
+        [SerializeField] private bool _isPaused;
         private bool _platformHasBeenSelected, _weaponSelected;
         #endregion
 
@@ -92,13 +92,17 @@ namespace MetroMayhem.Manager
         {
             _warFunds = _archiveWarFunds;
             _health = 100;
-            for (int i = 0; i < platforms.Length; i++) { 
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                platforms[i].GetComponent<Platform>().RemoveOccupyingWeapon();
+                Debug.Log("Restoring Level: Platform#" + i + " is occupied (" + _archivePlatOccup[i] + ") ");
                 isPlatformOccupied[i] = _archivePlatOccup[i];
                 if (_archivePlatOccup[i]) {
-                    platforms[i].GetComponent<Platform>().SetAsOccupied(towerPrefabs[_archiveWeaponID[i]], _archiveWeaponID[i]);
-                    platforms[i].GetComponent<Platform>().GetOccupyingWeapon().transform.eulerAngles = _archiveWeaponRotation[i];
-                } else  {
-                    platforms[i].GetComponent<Platform>().RemoveOccupyingWeapon();
+                    GameObject obj = Instantiate(towerPrefabs[_archiveWeaponID[i]], platforms[i].transform.position +
+                        new Vector3(0, 0.3f, 0),
+                        Quaternion.identity);
+                    obj.transform.eulerAngles = _archiveWeaponRotation[i];
+                    platforms[i].GetComponent<Platform>().SetAsOccupied(obj, _archiveWeaponID[i]);
                 }
             }
             UIManager.Instance.UpdateHealth(_health);

@@ -609,7 +609,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4483016502998064957}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: -0.00000004371139}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.3, y: 0.3, z: 0.3}
   m_ConstrainProportionsScale: 1
@@ -733,8 +733,9 @@ MonoBehaviour:
   Muzzle_Flash: {fileID: 7823894831791513452}
   bulletCasings: {fileID: 3808145898482626077}
   fireSound: {fileID: 8300000, guid: 08e0cb88300e54b09aa0deb684c3a3de, type: 3}
-  _platformID: 0
   _weaponID: 0
+  _isPaused: 0
+  _isFiring: 0
 --- !u!135 &5649990085902939429
 SphereCollider:
   m_ObjectHideFlags: 0
@@ -785,6 +786,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c910722b82f49b9886048b694fc078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _platformID: 0
   _weaponID: 0
 --- !u!1 &5047885608711103638
 GameObject:
