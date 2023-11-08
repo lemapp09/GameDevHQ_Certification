@@ -72,7 +72,10 @@ namespace MetroMayhem.Enemies
             // Initialize
             _anim.SetFloat(_idealNumberHash, Random.Range(0, 11) * 0.1f);
             // Assign the initial destination for the NavMeshAgent
-            _agent.SetDestination(_waypoints[_currentWayPointIndex].transform.position);
+            Vector3 tempPosition = _waypoints[_currentWayPointIndex].position;
+            tempPosition = new Vector3(tempPosition.x + Random.Range(-2.0f, 2.0f), transform.position.y,
+                tempPosition.z+ Random.Range(-2.0f, 2.0f));
+            _agent.SetDestination(tempPosition);
             StartCoroutine(CheckDistance());
             // Dissolve Initialize
             if (_dissolveSpeed > 0) {
@@ -203,8 +206,8 @@ namespace MetroMayhem.Enemies
                 }
                 _currentWayPointIndex++;
                 Vector3 tempPosition = _waypoints[_currentWayPointIndex].position;
-                tempPosition = new Vector3(tempPosition.x + Random.Range(-1.0f, 1.0f), transform.position.y,
-                    tempPosition.z+ Random.Range(-1.0f, 1.0f));
+                tempPosition = new Vector3(tempPosition.x + Random.Range(-2.0f, 2.0f), transform.position.y,
+                    tempPosition.z+ Random.Range(-2.0f, 2.0f));
                 _agent.SetDestination(tempPosition);
             }
             EnemySurvived?.Invoke();
@@ -262,7 +265,7 @@ namespace MetroMayhem.Enemies
         private void OnDisable(){
             Manager.GameManager.PauseLevel -= Pause;
             Manager.GameManager.UnpauseLevel -= Unpause;
-            Manager.GameManager.StopLevel += Pause;
+            Manager.GameManager.StopLevel -= Pause;
         }
 
         public void InitializeHashCodes(int[] hashCodes)

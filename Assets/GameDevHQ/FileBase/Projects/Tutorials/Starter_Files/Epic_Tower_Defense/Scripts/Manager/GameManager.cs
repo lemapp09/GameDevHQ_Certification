@@ -91,7 +91,7 @@ namespace MetroMayhem.Manager
         public void RestoreLevel()
         {
             _warFunds = _archiveWarFunds;
-            _health = _archiveHealth;
+            _health = 100;
             for (int i = 0; i < platforms.Length; i++) { 
                 isPlatformOccupied[i] = _archivePlatOccup[i];
                 if (_archivePlatOccup[i]) {
@@ -133,8 +133,8 @@ namespace MetroMayhem.Manager
 
         public void RestartCurrentLevel() {  // Lose
             UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nLOST");
+            StopLevel?.Invoke();
             RestoreLevel();
-            _isPaused = false;
             UIManager.Instance.ResetFastForward();
             RestartLevel?.Invoke();
         }
@@ -197,8 +197,7 @@ namespace MetroMayhem.Manager
             return false; // (true if WarFunds is greater than or equal to the tower price, false otherwise)
         }
             
-        public void PlaceTower(int PlacementPlatformID, int PlacementWeaponID)
-        {
+        public void PlaceTower(int PlacementPlatformID, int PlacementWeaponID) {
             if (_isPaused)
             {
                 if (PlacementPlatformID >= 0 && PlacementPlatformID < platforms.Length &&
@@ -262,7 +261,7 @@ namespace MetroMayhem.Manager
             _health--;
             UIManager.Instance.UpdateHealth(_health);
             if(_health <= 0) {
-                StopCurrentLevel();
+                RestartCurrentLevel();
             }
         }
 

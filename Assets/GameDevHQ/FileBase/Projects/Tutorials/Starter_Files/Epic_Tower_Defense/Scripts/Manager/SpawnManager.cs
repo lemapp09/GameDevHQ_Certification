@@ -60,8 +60,8 @@ namespace MetroMayhem.Manager
         /// </summary>
         private IEnumerator Spawn()
         {
-            float timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * 0.01f;
-            int howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * 20;
+            timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * 0.01f;
+            howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * 20;
             while (!_isLevelOver) {
                 if (_timeToNextSpawn < 0f && _currentEnemyToSpawn < howManyEnemyToSpawn) {
                     _timeToNextSpawn = timeBetweenSpawns;
@@ -94,18 +94,16 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void RePoolEnemies()
         {
+            Debug.Log("Reached RePool Enemies");
+            Debug.Log("Enemy Children count: " + transform.childCount);
             _isLevelOver = true;
-            List<GameObject> temp = new List<GameObject>();
-            if (temp.Count > 0)
-            {
-                foreach (Transform child in transform)
-                {
-                    temp.Add(child.gameObject);
-                    child.gameObject.SetActive(false);
-                    child.gameObject.transform.SetParent(PoolManager.Instance.transform);
-                    child.gameObject.transform.position = GenerateSpawnPoint();
-                }
+            foreach (Transform child in this.transform) {
+                Debug.Log("Re-Pooling " + child.name  +" in Re-Pooling Process of Spawn Manager. (" + 
+                          transform.childCount + " children in total)");
+                child.gameObject.transform.position = GenerateSpawnPoint();
+                PoolManager.Instance.ReturnToPool(child.gameObject);
             }
+            _currentEnemyToSpawn = 0;
         }
 
         /// <summary>
@@ -117,7 +115,7 @@ namespace MetroMayhem.Manager
             GameManager.StartPlay -= StartSpawningEnemies;
             GameManager.PauseLevel -= StopSpawningEnemies;
             GameManager.UnpauseLevel -= StartSpawningEnemies;
-            GameManager.StopLevel -= StopSpawningEnemies;
+            GameManager.StopLevel -= RePoolEnemies;
             GameManager.RestartLevel -= RePoolEnemies;
         }
     }
