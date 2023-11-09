@@ -46,6 +46,8 @@ namespace MetroMayhem.Enemies
 
         private float _speedCheckTimer = 0f, _speedCheckInterval = 0.1f;
         private float _unfreezeCharacter = 0f, _unfreezeInterval = 1.0f;
+        private float _unclumpCharacter = 0f, _unclumpInterval = 3.0f;
+        private bool _isClumped;
         private Vector3 _unfreePosition;
 
         public delegate void EnemyReachedDestination();
@@ -136,6 +138,7 @@ namespace MetroMayhem.Enemies
             {
                 _speedCheckTimer += Time.deltaTime;
                 _unfreezeCharacter += Time.deltaTime;
+                _unclumpCharacter += Time.deltaTime;
                 if (_speedCheckTimer >= _speedCheckInterval)
                 {
                     if (!_isHit && !_isDead)
@@ -158,6 +161,12 @@ namespace MetroMayhem.Enemies
                     // Check every second to start a frozen character
                     UnFreezeEnemy();
                 }
+
+                if (_unclumpCharacter >= _unclumpInterval)
+                {
+                    // Check every 3 second to un-clump a character
+                    UnClumpEnemy();
+                }
             }
         }
 
@@ -167,6 +176,22 @@ namespace MetroMayhem.Enemies
             }
             _unfreezeCharacter = 0f;
             _unfreePosition = this.transform.position;
+        }
+
+        private void UnClumpEnemy() {
+            if (_agent.EntityBody.RemainingDistance < 2f) {
+                if (_isClumped) {
+                    _isClumped = false;
+                    if (_currentWayPointIndex < _waypoints.Count - 1) {
+                        _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+                    }
+                }
+                else
+                {
+                    _isClumped = true;
+                }
+            }
+            _unclumpCharacter = 0f;
         }
         
         public void Damage(int amount) {

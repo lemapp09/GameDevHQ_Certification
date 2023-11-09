@@ -1,5 +1,7 @@
+using System.Collections;
 using MetroMayhem.Weapons;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace MetroMayhem.Manager
 {
@@ -130,9 +132,15 @@ namespace MetroMayhem.Manager
             StopCurrentLevel();
             _currentLevel++;
             if (_currentLevel > 10) {
-                Debug.Log("You Won the Game!");
+                UIManager.Instance.LevelDisplay("GAME\nWON");
+                StartCoroutine(LoadGameWonScene());
             }
             Invoke(nameof(StartNextLevel), 7f);
+        }
+
+        private IEnumerator LoadGameWonScene() {
+            yield return new WaitForSeconds(5);
+            SceneManager.LoadScene(2);
         }
 
         public void RestartCurrentLevel() {  // Lose
