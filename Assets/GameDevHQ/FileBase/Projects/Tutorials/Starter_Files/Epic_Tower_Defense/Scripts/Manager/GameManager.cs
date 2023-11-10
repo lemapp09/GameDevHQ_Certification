@@ -41,7 +41,7 @@ namespace MetroMayhem.Manager
         private bool[] isPlatformOccupied;  // Boolean array to track if a platform is occupied
         [SerializeField] private int _warFunds = 350, _health = 100, _currentLevel = 1; // Initialize with your starting WarFunds
         private int PlatformID = -1, WeaponID  = -1; // Part of weapon Purchase
-        private int _archiveWarFunds, _archiveHealth;
+        private int _archiveWarFunds, _enemyThisLevel, _enemyAlive;
         private bool[] _archivePlatOccup;
         private int[]  _archiveWeaponID;
         private Vector3[] _archiveWeaponRotation;
@@ -74,9 +74,13 @@ namespace MetroMayhem.Manager
             ArchiveLevelData();
         }
 
+        public void SetNumberOfEnemy(int NumberOfEnemy) {
+            _enemyThisLevel = NumberOfEnemy; 
+            _enemyAlive = NumberOfEnemy;
+        }
+
         public void ArchiveLevelData() {
             _archiveWarFunds = _warFunds;
-            _archiveHealth = _health;
             for (int i = 0; i < platforms.Length; i++) { 
                 _archivePlatOccup[i] = isPlatformOccupied[i];
                 _archiveWeaponID[i] = platforms[i].GetComponent<Platform>().GetWeaponID();
@@ -270,6 +274,8 @@ namespace MetroMayhem.Manager
         }
         
         private void EnemyHasReachedTheEnd() { // EnemySurvived;
+            _enemyAlive--;
+            UIManager.Instance.UpdateEnemyCount(_enemyAlive, _enemyThisLevel);
             _health--;
             UIManager.Instance.UpdateHealth(_health);
             if(_health <= 0) {
@@ -279,10 +285,17 @@ namespace MetroMayhem.Manager
 
         private void EnemyDied()
         {
-            _warFunds += 150;
+            _enemyAlive--;
+            UIManager.Instance.UpdateEnemyCount(_enemyAlive, _enemyThisLevel);
+            _warFunds += 15;
             UIManager.Instance.UpdateWarFunds(_warFunds);
         }
 
+        public void WeaponFired(int AmmoCost)
+        {
+            _warFunds -= AmmoCost;
+        }
+        
         private void OnDisable() {
             Enemies.EnemyAI.EnemySurvived -= EnemyHasReachedTheEnd;
             Enemies.EnemyAI.EnemyKilled -= EnemyDied;

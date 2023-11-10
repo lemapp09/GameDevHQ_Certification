@@ -34,7 +34,7 @@ namespace MetroMayhem.Weapons
         
         [SerializeField] public int _weaponID;
         [SerializeField] private bool _isPaused, _isFiring;
-        private int _damageAmount;
+        private int _damageAmount, _shotsFiredCount;
         private float _tempRotY;
         private float _health = 100;
         #endregion
@@ -110,6 +110,11 @@ namespace MetroMayhem.Weapons
                         }
                     }
                 }
+                _shotsFiredCount++;
+                if (_shotsFiredCount >= 60) {
+                    _shotsFiredCount = 0;
+                    GameManager.Instance.WeaponFired(1);
+                }
             }
         }
         
@@ -158,15 +163,6 @@ namespace MetroMayhem.Weapons
                 GameManager.Instance.DismantleTower(this.transform.GetComponent<WeaponID>().GetPlatformID(), _weaponID);
             }
         }
-        
-        private void OnDisable()
-        {
-            GameManager.StartLevel -= UnpauseGun;
-            GameManager.PauseLevel -= PauseGun;
-            GameManager.UnpauseLevel -= UnpauseGun;
-            GameManager.StopLevel -= PauseGun;
-            GameManager.RestartLevel -= PauseGun;
-        }
 
         private void PauseGun() {
             _isPaused = true;
@@ -193,6 +189,15 @@ namespace MetroMayhem.Weapons
 
         private void OnMouseUp() {
             _isFiring = false;
+        }
+        
+        private void OnDisable()
+        {
+            GameManager.StartLevel -= UnpauseGun;
+            GameManager.PauseLevel -= PauseGun;
+            GameManager.UnpauseLevel -= UnpauseGun;
+            GameManager.StopLevel -= PauseGun;
+            GameManager.RestartLevel -= PauseGun;
         }
 
     }

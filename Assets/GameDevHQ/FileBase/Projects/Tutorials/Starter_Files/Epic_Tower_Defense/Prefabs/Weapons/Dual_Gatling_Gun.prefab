@@ -10200,7 +10200,8 @@ AudioSource:
   m_GameObject: {fileID: 3787378071199022422}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: -7197221023225322720, guid: 134acbf1a38654ad7a3979bdc01db942,
+    type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
@@ -10311,8 +10312,6 @@ MonoBehaviour:
   _bulletCasings:
   - {fileID: 6383740364972063436}
   - {fileID: 557200780695329546}
-  _bulletPrefab: {fileID: 3970336686272776754, guid: e2cc5a25fa6b84a4e91fbb1ccf57d177,
-    type: 3}
   _fireSound: {fileID: 8300000, guid: ebcd7ceac90454c1e9dc458cb87b6f75, type: 3}
   _mixerGroup: {fileID: -7197221023225322720, guid: 134acbf1a38654ad7a3979bdc01db942,
     type: 2}
@@ -10325,6 +10324,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 16
   visibleTargets: []
+  _isFiring: 0
+  _isPaused: 0
   _weaponID: 2
 --- !u!135 &4820192580487372566
 SphereCollider:
@@ -10376,6 +10377,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94c910722b82f49b9886048b694fc078, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _platformID: 0
   _weaponID: 2
 --- !u!1 &4120024312957935849
 GameObject:

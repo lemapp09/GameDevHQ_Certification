@@ -102,7 +102,7 @@ namespace MetroMayhem.Weapons
                     _misslePositionsRight[i].SetActive(true); //enable fake rocket to show ready to fire
                 }
             }
-
+            GameManager.Instance.WeaponFired(60);
             _launched = false; //set launch bool to false
         }
         

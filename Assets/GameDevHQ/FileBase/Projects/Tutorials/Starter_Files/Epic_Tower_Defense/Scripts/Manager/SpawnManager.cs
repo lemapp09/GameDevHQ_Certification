@@ -62,6 +62,7 @@ namespace MetroMayhem.Manager
         {
             timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * 0.01f;
             howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * 20;
+            GameManager.Instance.SetNumberOfEnemy(howManyEnemyToSpawn);
             while (!_isLevelOver) {
                 if (_timeToNextSpawn < 0f && _currentEnemyToSpawn < howManyEnemyToSpawn) {
                     _timeToNextSpawn = timeBetweenSpawns;

@@ -22,6 +22,7 @@ namespace MetroMayhem.Manager
 
         [Header("WarFunds")] [SerializeField] private TextMeshProUGUI _warFundsText;
         [SerializeField] private TextMeshProUGUI _status;
+        [SerializeField] private Slider _percentageOfEnemy;
 
         [Header("Playback Speed")]
         [SerializeField] private Image _pauseImage;
@@ -247,6 +248,14 @@ namespace MetroMayhem.Manager
         {
             _warFundsText.text = funds.ToString();
             DisplayAffordTower();
+        }
+
+        public void UpdateEnemyCount(int enemyAlive, int enemyThisLevel) {
+            _percentageOfEnemy.value = ((float)enemyThisLevel - (float)enemyAlive) / (float)enemyThisLevel;
+        }
+
+        public void UpdatePercentageOfEnemies(float percentAlive) {
+                _percentageOfEnemy.value = percentAlive;
         }
 
         public void UpdateLevelCount(int level) {

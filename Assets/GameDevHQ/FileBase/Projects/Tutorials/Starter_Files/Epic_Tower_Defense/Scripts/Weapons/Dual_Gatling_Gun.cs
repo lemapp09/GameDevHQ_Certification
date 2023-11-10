@@ -48,7 +48,7 @@ namespace MetroMayhem.Weapons
 
         [SerializeField] private bool _isFiring,  _isPaused;
         [SerializeField] private int _weaponID;
-        private int _damageAmount;
+        private int _damageAmount, _shotsFiredCount;
         private float _tempRotY;
         private float _health = 100;
         #endregion
@@ -124,6 +124,12 @@ namespace MetroMayhem.Weapons
                         }
                     }
                 }
+
+                _shotsFiredCount++;
+                if (_shotsFiredCount >= 60) {
+                    _shotsFiredCount = 0;
+                    GameManager.Instance.WeaponFired(2);
+                }
             }
         }
 
@@ -134,6 +140,7 @@ namespace MetroMayhem.Weapons
                 hit.collider.SendMessage("Damage", 35);
             }
         }
+        
         public void Damage(int DamageAmount)
         {
             _health -= DamageAmount;
@@ -199,16 +206,6 @@ namespace MetroMayhem.Weapons
             _isFiring = false;
         }
 
-        private void OnDisable()
-        {
-            GameManager.StartLevel -= PauseGun;
-            GameManager.StartPlay -= UnpauseGun;
-            GameManager.PauseLevel -= PauseGun;
-            GameManager.UnpauseLevel -= UnpauseGun;
-            GameManager.StopLevel -= PauseGun;
-            GameManager.RestartLevel -= PauseGun;
-        }
-
         private void PauseGun() {
             _isPaused = true;
             _isFiring = false;
@@ -218,35 +215,14 @@ namespace MetroMayhem.Weapons
             _isPaused = false;
         }
 
-        IEnumerator FindVisibleTargets()
+        private void OnDisable()
         {
-            while (true)
-            {
-                yield return new WaitForSeconds(0.2f);
-                FindTargetsInView();
-            }
-        }
-
-        void FindTargetsInView()
-        {
-            visibleTargets.Clear();
-            Collider[] targetsInView = Physics.OverlapSphere(transform.position, viewRange, targetMask);
-
-            for (int i = 0; i < targetsInView.Length; i++)
-            {
-                Transform target = targetsInView[i].transform;
-                Vector3 directionToTarget = (target.position - transform.position).normalized;
-
-                if (Vector3.Angle(transform.forward, directionToTarget) < viewAngle / 2)
-                {
-                    float distanceToTarget = Vector3.Distance(transform.position, target.position);
-
-                    if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstacleMask))
-                    {
-                        visibleTargets.Add(target);
-                    }
-                }
-            }
+            GameManager.StartLevel -= PauseGun;
+            GameManager.StartPlay -= UnpauseGun;
+            GameManager.PauseLevel -= PauseGun;
+            GameManager.UnpauseLevel -= UnpauseGun;
+            GameManager.StopLevel -= PauseGun;
+            GameManager.RestartLevel -= PauseGun;
         }
     }
 }
