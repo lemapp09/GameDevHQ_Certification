@@ -169,7 +169,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1230569102343472380
 Transform:
   m_ObjectHideFlags: 0
@@ -352,7 +352,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2353791772709648925
 Transform:
   m_ObjectHideFlags: 0
@@ -435,7 +435,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 4483016502998064957}
   _isLeft: 1
   _spriteRenderer: {fileID: 5400655902239673993}
-  _collider: {fileID: 0}
+  _collider: {fileID: 4936426023887590351}
 --- !u!65 &4936426023887590351
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -455,8 +455,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.5199995, y: 2.2499998, z: 0.19999999}
-  m_Center: {x: 0.000000014901161, y: 0, z: 0.00000023841858}
+  m_Size: {x: 4.5199995, y: 2.2499998, z: 0.25}
+  m_Center: {x: 0.0000000021599624, y: 1.8882992e-16, z: 0}
 --- !u!1 &4478794078909591968
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,7 +475,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &7414449139973620493
 Transform:
   m_ObjectHideFlags: 0
@@ -558,7 +558,7 @@ MonoBehaviour:
   _weaponToRotate: {fileID: 4483016502998064957}
   _isLeft: 0
   _spriteRenderer: {fileID: 1839988060978584452}
-  _collider: {fileID: 0}
+  _collider: {fileID: 2870794340599654907}
 --- !u!65 &2870794340599654907
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -578,8 +578,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.5199995, y: 2.2499998, z: 0.19999999}
-  m_Center: {x: 0.000000014901161, y: 0, z: 0}
+  m_Size: {x: 4.5199995, y: 2.2499998, z: 0.25}
+  m_Center: {x: 0.0000000010408214, y: 9.09915e-17, z: 0}
 --- !u!1 &4483016502998064957
 GameObject:
   m_ObjectHideFlags: 0
@@ -756,7 +756,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 1.5
+  m_Radius: 2
   m_Center: {x: 0, y: 0.74, z: 0.44}
 --- !u!114 &8302424302198620613
 MonoBehaviour:

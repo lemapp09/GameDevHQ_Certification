@@ -265,6 +265,7 @@ MonoBehaviour:
   _DissovleMaterial: {fileID: 2100000, guid: d0d39f74e7c21410fa6bcc49a0361851, type: 2}
   _dissolveAmount: 1
   _health: 100
+  _dissolveRate: 0
 --- !u!82 &5617596416614282596
 AudioSource:
   m_ObjectHideFlags: 0
@@ -379,7 +380,7 @@ MonoBehaviour:
   Acceleration: 8
   AngularSpeed: 120
   StoppingDistance: 0.1
-  AutoBreaking: 1
+  AutoBreaking: 0
 --- !u!114 &1039713118052354900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -392,7 +393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fed5c6dd07c7d6e4f857b420fa8f559a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0.15
+  Radius: 0.2
   Height: 0.6
 --- !u!114 &2072639746344196709
 MonoBehaviour:

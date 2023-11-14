@@ -20,7 +20,11 @@ namespace MetroMayhem.Manager
             } if (_audioMixer.GetFloat(Constants.SFXVolume, out var sfxVolume) ) {
                 _sfxVolumeSlider.value = MixerToSliderValue(sfxVolume);
             }
-            _cameraControlSpeed.value = CameraController.Instance.GetCameraControlSpeed();
+
+            if (CameraController.Instance != null) {
+                _cameraControlSpeed.value = CameraController.Instance.GetCameraControlSpeed();
+            }
+
             SubscribeToEvents();
         }
 
@@ -38,8 +42,12 @@ namespace MetroMayhem.Manager
             _masterVolumeSilder.onValueChanged.AddListener(OnMasterVolumeChanged);
             _musicVolumeSLider.onValueChanged.AddListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
-            _cameraControlSpeed.onValueChanged.AddListener(OnCameraSpeedChanged);
-            _pathwayArrowsToggle.onValueChanged.AddListener(OnPathwayArrowsToggle);
+            if (CameraController.Instance != null) {
+                _cameraControlSpeed.onValueChanged.AddListener(OnCameraSpeedChanged);
+            }
+            if (_pathwayArrowsToggle != null) {
+                _pathwayArrowsToggle.onValueChanged.AddListener(OnPathwayArrowsToggle);
+            }
         }
 
         private void OnGenre1Clicked() {
@@ -78,8 +86,12 @@ namespace MetroMayhem.Manager
             _masterVolumeSilder.onValueChanged.RemoveListener(OnMasterVolumeChanged);
             _musicVolumeSLider.onValueChanged.RemoveListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.RemoveListener(OnSFXVolumeChanged);
-            _cameraControlSpeed.onValueChanged.RemoveListener(OnSFXVolumeChanged);
-            _pathwayArrowsToggle.onValueChanged.RemoveListener(OnPathwayArrowsToggle);
+            if (CameraController.Instance != null) {
+                _cameraControlSpeed.onValueChanged.RemoveListener(OnSFXVolumeChanged);
+            }
+            if (_pathwayArrowsToggle != null) {
+                _pathwayArrowsToggle.onValueChanged.RemoveListener(OnPathwayArrowsToggle);
+            }
         }
 
         private void OnMasterVolumeChanged(float sliderValue) {

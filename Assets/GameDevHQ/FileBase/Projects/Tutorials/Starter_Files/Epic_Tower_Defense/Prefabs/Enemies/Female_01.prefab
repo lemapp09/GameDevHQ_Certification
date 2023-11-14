@@ -246,16 +246,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 523efc1eb3fc242d1b9c1cb3f25d4e8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _agent: {fileID: 0}
+  _agent: {fileID: 896687885477977329}
   _currentWayPointIndex: 0
   _anim: {fileID: 8523870099873229639}
-  _maxSpeed: 1.5
   _mixerGroup: {fileID: -7197221023225322720, guid: 134acbf1a38654ad7a3979bdc01db942,
     type: 2}
   _dissolveSpeed: 3
   _DissovleMaterial: {fileID: 2100000, guid: 6c7fdf4894a2044cf80a6e16a90db49e, type: 2}
   _dissolveAmount: 1
   _health: 100
+  _dissolveRate: 0
 --- !u!82 &4619376663530057988
 AudioSource:
   m_ObjectHideFlags: 0
@@ -370,7 +370,7 @@ MonoBehaviour:
   Acceleration: 8
   AngularSpeed: 120
   StoppingDistance: 0.1
-  AutoBreaking: 1
+  AutoBreaking: 0
 --- !u!114 &1447654196538041489
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -383,7 +383,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fed5c6dd07c7d6e4f857b420fa8f559a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0.15
+  Radius: 0.2
   Height: 0.6
 --- !u!114 &6870062134287133203
 MonoBehaviour:

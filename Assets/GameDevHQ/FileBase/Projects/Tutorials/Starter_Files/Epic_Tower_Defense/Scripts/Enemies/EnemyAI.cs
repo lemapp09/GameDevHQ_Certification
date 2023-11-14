@@ -46,7 +46,7 @@ namespace MetroMayhem.Enemies
 
         private float _speedCheckTimer = 0f, _speedCheckInterval = 0.1f;
         private float _unfreezeCharacter = 0f, _unfreezeInterval = 1.0f;
-        private float _unclumpCharacter = 0f, _unclumpInterval = 3.0f;
+        private float _unclumpCharacter = 0f, _unclumpInterval = 1.0f;
         private bool _isClumped;
         private Vector3 _unfreePosition;
 
@@ -179,7 +179,7 @@ namespace MetroMayhem.Enemies
         }
 
         private void UnClumpEnemy() {
-            if (_agent.EntityBody.RemainingDistance < 2f) {
+            if (_agent.EntityBody.RemainingDistance < 4f) {
                 if (_isClumped) {
                     _isClumped = false;
                     if (_currentWayPointIndex < _waypoints.Count - 1) {

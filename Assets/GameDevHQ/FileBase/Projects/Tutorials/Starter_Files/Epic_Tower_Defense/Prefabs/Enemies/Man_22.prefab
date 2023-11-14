@@ -182,6 +182,7 @@ MonoBehaviour:
   _DissovleMaterial: {fileID: 2100000, guid: a4014ca02c62e4693925ad057f14c99c, type: 2}
   _dissolveAmount: 1
   _health: 100
+  _dissolveRate: 0
 --- !u!114 &5623386096230424799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -399,7 +400,7 @@ MonoBehaviour:
   Acceleration: 8
   AngularSpeed: 120
   StoppingDistance: 0.1
-  AutoBreaking: 1
+  AutoBreaking: 0
 --- !u!114 &3620367695650609170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -412,7 +413,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fed5c6dd07c7d6e4f857b420fa8f559a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Radius: 0.15
+  Radius: 0.2
   Height: 0.6
 --- !u!114 &6686364520236038480
 MonoBehaviour:
