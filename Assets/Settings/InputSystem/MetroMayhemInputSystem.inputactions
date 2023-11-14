@@ -288,6 +288,56 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "GameControl",
+            "id": "d183d60e-5cea-42bd-a38d-588c0b15488a",
+            "actions": [
+                {
+                    "name": "Quit",
+                    "type": "Button",
+                    "id": "8e6100f0-a9ca-4e7f-9cef-d97d4bfd2785",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "One Modifier",
+                    "id": "f5aac274-3be8-446a-b9b7-3dcffbe0f816",
+                    "path": "OneModifier",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": true,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "modifier",
+                    "id": "669a0298-ab9b-4d52-ad12-b3131f35eff8",
+                    "path": "<Keyboard>/ctrl",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "binding",
+                    "id": "be4438ac-4cdc-403b-b45a-776966d68e28",
+                    "path": "<Keyboard>/#(Q)",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Quit",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                }
+            ]
         }
     ],
     "controlSchemes": []

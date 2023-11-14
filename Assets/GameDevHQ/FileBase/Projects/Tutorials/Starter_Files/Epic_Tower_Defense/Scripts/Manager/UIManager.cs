@@ -64,6 +64,13 @@ namespace MetroMayhem.Manager
         [SerializeField] private TextMeshProUGUI _dismantlePriceText;
         [SerializeField] private Button _dismantleYesButton;
         [SerializeField] private Button _dismantleNoButton;
+        
+        [Header("Quit System")]
+        [SerializeField ] private Button _quitGameButton;
+        [SerializeField] private GameObject _quitPanel;
+        [SerializeField] private Button _quitYesButton;
+        [SerializeField] private Button _quitNoButton;
+        
         private int _dismantlePlatformID, _dismantleWeaponID;
         #endregion
         private void Start() {
@@ -254,10 +261,6 @@ namespace MetroMayhem.Manager
             _percentageOfEnemy.value = ((float)enemyThisLevel - (float)enemyAlive) / (float)enemyThisLevel;
         }
 
-        public void UpdatePercentageOfEnemies(float percentAlive) {
-                _percentageOfEnemy.value = percentAlive;
-        }
-
         public void UpdateLevelCount(int level) {
             _levelCountText.text = level.ToString() + "/ 10";
         }
@@ -269,6 +272,21 @@ namespace MetroMayhem.Manager
             _fastForwardImage.gameObject.SetActive(false);
             yield return new WaitForSeconds(1.5f);
             _restartImage.SetActive(false);
+        }
+
+        private void DisplayQuitPanel() {
+            _quitPanel.SetActive(true);
+            GameManager.Instance.PauseCurrentLevel();
+        }
+
+        private void QuitGameYes() {
+            _quitPanel.SetActive(false);
+            GameManager.Instance.QuitGame();
+        }
+
+        private void QuitGameNo() {
+            _quitPanel.SetActive(false);
+            GameManager.Instance.UnpauseCurrentLevel();
         }
         
         private void OnEnable() {
@@ -290,6 +308,9 @@ namespace MetroMayhem.Manager
             _upgradeMissileNoButton.onClick.AddListener(UpgradeNo);
             _dismantleYesButton.onClick.AddListener(DismantleYes);
             _dismantleNoButton.onClick.AddListener(DismantleNo);
+            _quitGameButton.onClick.AddListener(DisplayQuitPanel);
+            _quitYesButton.onClick.AddListener(QuitGameYes);
+            _quitNoButton.onClick.AddListener(QuitGameNo);
             GameManager.StartLevel += Blink;
             GameManager.StartPlay += DoNotBlink;
         }
@@ -313,6 +334,9 @@ namespace MetroMayhem.Manager
             _upgradeMissileNoButton.onClick.RemoveListener(UpgradeNo);
             _dismantleYesButton.onClick.RemoveListener(DismantleYes);
             _dismantleNoButton.onClick.RemoveListener(DismantleNo);
+            _quitGameButton.onClick.RemoveListener(DisplayQuitPanel);
+            _quitYesButton.onClick.RemoveListener(QuitGameYes);
+            _quitNoButton.onClick.RemoveListener(QuitGameNo);
             GameManager.StartLevel -= Blink;
             GameManager.StartPlay -= DoNotBlink;
         }

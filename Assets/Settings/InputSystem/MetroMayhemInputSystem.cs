@@ -310,6 +310,56 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""GameControl"",
+            ""id"": ""d183d60e-5cea-42bd-a38d-588c0b15488a"",
+            ""actions"": [
+                {
+                    ""name"": ""Quit"",
+                    ""type"": ""Button"",
+                    ""id"": ""8e6100f0-a9ca-4e7f-9cef-d97d4bfd2785"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": ""One Modifier"",
+                    ""id"": ""f5aac274-3be8-446a-b9b7-3dcffbe0f816"",
+                    ""path"": ""OneModifier"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""modifier"",
+                    ""id"": ""669a0298-ab9b-4d52-ad12-b3131f35eff8"",
+                    ""path"": ""<Keyboard>/ctrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""binding"",
+                    ""id"": ""be4438ac-4cdc-403b-b45a-776966d68e28"",
+                    ""path"": ""<Keyboard>/#(Q)"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Quit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -325,6 +375,9 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         m_Towers_Movement = m_Towers.FindAction("Movement", throwIfNotFound: true);
         m_Towers_Upgrade = m_Towers.FindAction("Upgrade", throwIfNotFound: true);
         m_Towers_Dismantle = m_Towers.FindAction("Dismantle", throwIfNotFound: true);
+        // GameControl
+        m_GameControl = asset.FindActionMap("GameControl", throwIfNotFound: true);
+        m_GameControl_Quit = m_GameControl.FindAction("Quit", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -514,6 +567,52 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         }
     }
     public TowersActions @Towers => new TowersActions(this);
+
+    // GameControl
+    private readonly InputActionMap m_GameControl;
+    private List<IGameControlActions> m_GameControlActionsCallbackInterfaces = new List<IGameControlActions>();
+    private readonly InputAction m_GameControl_Quit;
+    public struct GameControlActions
+    {
+        private @MetroMayhemInputSystem m_Wrapper;
+        public GameControlActions(@MetroMayhemInputSystem wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Quit => m_Wrapper.m_GameControl_Quit;
+        public InputActionMap Get() { return m_Wrapper.m_GameControl; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(GameControlActions set) { return set.Get(); }
+        public void AddCallbacks(IGameControlActions instance)
+        {
+            if (instance == null || m_Wrapper.m_GameControlActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_GameControlActionsCallbackInterfaces.Add(instance);
+            @Quit.started += instance.OnQuit;
+            @Quit.performed += instance.OnQuit;
+            @Quit.canceled += instance.OnQuit;
+        }
+
+        private void UnregisterCallbacks(IGameControlActions instance)
+        {
+            @Quit.started -= instance.OnQuit;
+            @Quit.performed -= instance.OnQuit;
+            @Quit.canceled -= instance.OnQuit;
+        }
+
+        public void RemoveCallbacks(IGameControlActions instance)
+        {
+            if (m_Wrapper.m_GameControlActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IGameControlActions instance)
+        {
+            foreach (var item in m_Wrapper.m_GameControlActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_GameControlActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public GameControlActions @GameControl => new GameControlActions(this);
     public interface ICameraActions
     {
         void OnMovement(InputAction.CallbackContext context);
@@ -526,5 +625,9 @@ public partial class @MetroMayhemInputSystem: IInputActionCollection2, IDisposab
         void OnMovement(InputAction.CallbackContext context);
         void OnUpgrade(InputAction.CallbackContext context);
         void OnDismantle(InputAction.CallbackContext context);
+    }
+    public interface IGameControlActions
+    {
+        void OnQuit(InputAction.CallbackContext context);
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using MetroMayhem.Weapons;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -51,6 +52,8 @@ namespace MetroMayhem.Manager
         
         [Header("Pathway Arrows")]
         [SerializeField] private GameObject _pathwayArrows;
+
+        private MetroMayhemInputSystem _input;
         #endregion
 
         private void OnEnable() {
@@ -60,6 +63,9 @@ namespace MetroMayhem.Manager
             _archivePlatOccup = new bool[platforms.Length];
             _archiveWeaponID = new int[platforms.Length];
             _archiveWeaponRotation = new Vector3[platforms.Length];
+            _input = new MetroMayhemInputSystem();
+            _input.Enable();
+            _input.GameControl.Quit.performed += ctx => QuitGame();
         }
 
         private void Start() {
@@ -302,10 +308,21 @@ namespace MetroMayhem.Manager
         public void TogglePathwayArrows(bool isVisible) {
             _pathwayArrows.SetActive(isVisible);
         }
+
+        public void QuitGame() {
+            // Quit the Editor
+            if (Application.isEditor) {
+                    EditorApplication.ExitPlaymode();
+            }
+            // Quit the game
+            Application.Quit();
+        }
         
         private void OnDisable() {
             Enemies.EnemyAI.EnemySurvived -= EnemyHasReachedTheEnd;
             Enemies.EnemyAI.EnemyKilled -= EnemyDied;
+            _input.Disable();
+            _input.GameControl.Quit.performed -= ctx => QuitGame();
         }
     }
 } 
