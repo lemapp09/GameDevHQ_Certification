@@ -9,7 +9,6 @@ namespace MetroMayhem.Weapons
         #region Variables
         [SerializeField] private int _platformID, _weaponID;
         [SerializeField] private GameObject _selectionMedallion;
-        [SerializeField] private float _defaultAngle;
         [SerializeField] private Collider _boxCollider;
         private GameObject _occupyingWeapon;
         private bool _isOccupied, _isBlinking, _isSelected, _anotherPlatformSelected;
@@ -79,10 +78,6 @@ namespace MetroMayhem.Weapons
             _anotherPlatformSelected = false;
             _isSelected = false;
             _isBlinking = true;
-        }
-
-        public float WhatIsTheDefaulAngle() {
-            return _defaultAngle;
         }
 
         public void SetAsOccupied(GameObject OccupyingWeapon, int weaponID) {

@@ -270,7 +270,7 @@ namespace MetroMayhem.Manager
             yield return new WaitForSeconds(1.5f);
             _restartImage.SetActive(false);
         }
-
+        
         private void OnEnable() {
             _levelStatusPanel.SetActive(false);
             _pauseButton.onClick.AddListener(PauseClicked);

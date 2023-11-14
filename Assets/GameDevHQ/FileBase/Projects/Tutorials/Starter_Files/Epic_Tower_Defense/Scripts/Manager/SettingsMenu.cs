@@ -10,6 +10,7 @@ namespace MetroMayhem.Manager
         [SerializeField] private Slider _masterVolumeSilder, _musicVolumeSLider, _sfxVolumeSlider, _cameraControlSpeed;
         [SerializeField] private Button _closeButton, _genreButton1, _genreButton2, _genreButton3, _genreButton4, _howTo;
         [SerializeField] private GameObject _mainCanvas, _settingsCanvas, _howToCanvas;
+        [SerializeField] private Toggle _pathwayArrowsToggle;
     
         private void OnEnable() {
             if (_audioMixer.GetFloat(Constants.MasterVolume, out var masterVolume) ) {
@@ -19,7 +20,7 @@ namespace MetroMayhem.Manager
             } if (_audioMixer.GetFloat(Constants.SFXVolume, out var sfxVolume) ) {
                 _sfxVolumeSlider.value = MixerToSliderValue(sfxVolume);
             }
-            _cameraControlSpeed.value = 1; //CameraController.Instance.GetCameraControlSpeed();
+            _cameraControlSpeed.value = CameraController.Instance.GetCameraControlSpeed();
             SubscribeToEvents();
         }
 
@@ -38,6 +39,7 @@ namespace MetroMayhem.Manager
             _musicVolumeSLider.onValueChanged.AddListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
             _cameraControlSpeed.onValueChanged.AddListener(OnCameraSpeedChanged);
+            _pathwayArrowsToggle.onValueChanged.AddListener(OnPathwayArrowsToggle);
         }
 
         private void OnGenre1Clicked() {
@@ -61,8 +63,8 @@ namespace MetroMayhem.Manager
             _settingsCanvas.SetActive(false);
         }
 
-        private void OnCameraSpeedChanged(float arg0) {
-            // CameraController.Instance.SetCameraSpeed(arg0);
+        private void OnCameraSpeedChanged(float cameraSpeed) {
+            CameraController.Instance.SetCameraSpeed(cameraSpeed);
         }
         
         private void UnsubscribeFromEvents()
@@ -77,6 +79,7 @@ namespace MetroMayhem.Manager
             _musicVolumeSLider.onValueChanged.RemoveListener(OnMusicVolumeChanged);
             _sfxVolumeSlider.onValueChanged.RemoveListener(OnSFXVolumeChanged);
             _cameraControlSpeed.onValueChanged.RemoveListener(OnSFXVolumeChanged);
+            _pathwayArrowsToggle.onValueChanged.RemoveListener(OnPathwayArrowsToggle);
         }
 
         private void OnMasterVolumeChanged(float sliderValue) {
@@ -107,6 +110,10 @@ namespace MetroMayhem.Manager
 
         private float SliderToMixerValue(float sliderValue) {
             return Mathf.Lerp(-80, 20, sliderValue);
+        }
+
+        private void OnPathwayArrowsToggle(bool isVisible) {
+            GameManager.Instance.TogglePathwayArrows(isVisible);
         }
     }
 }

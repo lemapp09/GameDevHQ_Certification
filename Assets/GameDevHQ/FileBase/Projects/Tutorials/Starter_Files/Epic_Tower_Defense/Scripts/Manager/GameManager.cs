@@ -48,6 +48,9 @@ namespace MetroMayhem.Manager
         
         [SerializeField] private bool _isPaused;
         private bool _platformHasBeenSelected, _weaponSelected;
+        
+        [Header("Pathway Arrows")]
+        [SerializeField] private GameObject _pathwayArrows;
         #endregion
 
         private void OnEnable() {
@@ -230,7 +233,7 @@ namespace MetroMayhem.Manager
                         GameObject obj = Instantiate(towerPrefabs[PlacementWeaponID], platforms[PlacementPlatformID].transform.position +
                                 new Vector3(0, 0.3f, 0),
                             Quaternion.identity);
-                        float _tempRotY = platforms[PlacementPlatformID].GetComponent<Platform>().WhatIsTheDefaulAngle();
+                        float _tempRotY = 0;
                         obj.GetComponent<WeaponID>().SetPlatformID(PlacementPlatformID);
                         obj.transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
                         
@@ -294,6 +297,10 @@ namespace MetroMayhem.Manager
         public void WeaponFired(int AmmoCost)
         {
             _warFunds -= AmmoCost;
+        }
+
+        public void TogglePathwayArrows(bool isVisible) {
+            _pathwayArrows.SetActive(isVisible);
         }
         
         private void OnDisable() {

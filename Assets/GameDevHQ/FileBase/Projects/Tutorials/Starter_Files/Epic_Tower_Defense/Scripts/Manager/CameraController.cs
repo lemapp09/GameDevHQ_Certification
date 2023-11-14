@@ -47,12 +47,11 @@ namespace MetroMayhem.Manager
             return _cameraControlSpeed;
         }
 
-        public void SetCameraSpeed(float arg0) {
-            _cameraControlSpeed = arg0;
+        public void SetCameraSpeed(float cameraSpeed) {
+            _cameraControlSpeed = cameraSpeed;
         }
 
-        private void OnDisable()
-        {
+        private void OnDisable() {
             _input.Camera.Disable();
         }
     }
