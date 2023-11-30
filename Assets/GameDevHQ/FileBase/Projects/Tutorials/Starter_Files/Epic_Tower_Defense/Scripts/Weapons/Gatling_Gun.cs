@@ -36,7 +36,7 @@ namespace MetroMayhem.Weapons
         [SerializeField] private bool _isPaused, _isFiring;
         private int _damageAmount, _shotsFiredCount;
         private float _tempRotY;
-        private float _health = 100;
+        private float _health = 100, _gunRotationRate = -500f, _maxDistanceFireAtEnemy = 7f;
         #endregion
         
         private void OnEnable()
@@ -53,7 +53,7 @@ namespace MetroMayhem.Weapons
             GameManager.PauseLevel += PauseGun;
             GameManager.UnpauseLevel += UnpauseGun;
             GameManager.StopLevel += PauseGun;
-            GameManager.RestartLevel -= PauseGun;
+            GameManager.RestartLevel += PauseGun;
         }
         
         // Use this for initialization
@@ -104,7 +104,8 @@ namespace MetroMayhem.Weapons
                     fireRotation = Quaternion.RotateTowards(fireRotation, randomRotation, Random.Range(0.0f, 5f));
                     RaycastHit hit;
                     // Cast the ray in the calculated direction
-                    if (Physics.Raycast(transform.position, fireRotation * Vector3.forward, out hit, 7f, 1 << 6)) {
+                    if (Physics.Raycast(transform.position, fireRotation * Vector3.forward, out hit,
+                            _maxDistanceFireAtEnemy, 1 << 6)) {
                         if (hit.collider.CompareTag("Enemy")) {
                             hit.collider.GetComponent<Enemies.EnemyAI>().Damage(100);
                         }
@@ -122,14 +123,14 @@ namespace MetroMayhem.Weapons
         
         void RotateBarrel() 
         {
-            _gunBarrel.transform.Rotate(Vector3.forward * Time.deltaTime * -500.0f); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
+            _gunBarrel.transform.Rotate( Time.deltaTime * _gunRotationRate * Vector3.forward); //rotate the gun barrel along the "forward" (z) axis at 500 meters per second
 
         }
         
         public void Damage(int DamageAmount)
         {
             _health -= DamageAmount;
-            if (DamageAmount < 0)
+            if (DamageAmount <= 0)
             {
                 Destroy(gameObject);
             }
@@ -145,8 +146,8 @@ namespace MetroMayhem.Weapons
 
             if (_tempRotY <= 0) {
                 _tempRotY = 0;}
-            else if (_tempRotY >= 360) {
-                _tempRotY = 360;
+            else if (_tempRotY >= 359.5f) {
+                _tempRotY = 359.5f;
             }
             transform.localRotation = Quaternion.Euler(0, _tempRotY, 0);
         }

@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Serialization;
 
 namespace MetroMayhem.MainScreen
 {
@@ -17,16 +18,31 @@ namespace MetroMayhem.MainScreen
         
         [Header("Loading Next Scene Panel")]
         [SerializeField] private GameObject _loadingNextScenePanel;
-        [SerializeField] private  Slider progressBar;
+        [SerializeField] private  Slider _progressBar;
         [SerializeField] private bool _gameWonScene;
         #endregion
         
         private void OnEnable(){
+            if (_titleGraphics == null) {
+                Debug.Log("No title graphic files assigned to Main Screen.");
+            }
+            if ( _titleGraphic == null) {
+                Debug.Log("No UI Image container assigned to Main Screen");
+            }
+            if ( _urbanText  == null) {
+                Debug.Log("No UI Text container assigned to Main Screen.");
+            }
+            if ( _loadingNextScenePanel == null ) {
+                Debug.Log("No Loading Next Screen assigned to Main Screen.");
+            }
+            if ( _progressBar == null ) {
+                Debug.Log("No Progress Bar assigned to Main Screen.");
+            }
+
             _urbanText.color = new Color(1f, 1f, 1f, 0f);
             _titleGraphic.sprite = _titleGraphics[UnityEngine.Random.Range(0, _titleGraphics.Length)];
             StartCoroutine(FadeInUrbanDefendersText());
-            if (_gameWonScene)
-            {
+            if (_gameWonScene) {
                 StartCoroutine(QuitGame10Seconds());
             }
         }
@@ -43,7 +59,7 @@ namespace MetroMayhem.MainScreen
             while (!operation.isDone)
             {
                 float progress = Mathf.Clamp01(operation.progress / 0.9f);
-                progressBar.value = progress;
+                _progressBar.value = progress;
                 yield return null;
             }
         }
@@ -66,7 +82,7 @@ namespace MetroMayhem.MainScreen
 #endif
             // end game while in iOS
 #if UNITY_IOS
-            iOSDevice.Stop();
+            Application.Quit;
 #endif
             // end game while in Android
 #if UNITY_ANDROID
@@ -90,9 +106,8 @@ namespace MetroMayhem.MainScreen
 #if UNITY_WEBGL
             Application.Quit();
 #endif
-            // end game while in Android
 
-            Application.Quit();
+            // Application.Quit();
         }
 
     }

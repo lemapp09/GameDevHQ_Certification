@@ -80,6 +80,7 @@ namespace MetroMayhem.Manager
             UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nSTARTING");
             _isPaused = true;
             StartLevel?.Invoke();
+            UIManager.Instance.PauseLevel(0,0,true); // GameManager, StartLevel, On
             ArchiveLevelData();
         }
 
@@ -127,6 +128,7 @@ namespace MetroMayhem.Manager
 
         public void StartPlayGame() {
             _isPaused = false;
+            UIManager.Instance.PauseLevel(0,1,true); // GameManager, StartPlay, On
             StartPlay?.Invoke();
         }
 

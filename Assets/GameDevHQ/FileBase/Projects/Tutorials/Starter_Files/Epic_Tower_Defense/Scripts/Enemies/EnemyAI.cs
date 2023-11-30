@@ -34,7 +34,7 @@ namespace MetroMayhem.Enemies
         [Header("Dissolve")]
         [Tooltip("Time in seconds for full dissolve")]
         [SerializeField] private float _dissolveSpeed; // 10 for Large, 3 for small
-        [SerializeField] private Material _DissovleMaterial;
+        [FormerlySerializedAs("_DissovleMaterial")] [SerializeField] private Material _DissolveMaterial;
         public float _dissolveAmount = 1.0f;
         
         [Header("Health")]
@@ -65,8 +65,14 @@ namespace MetroMayhem.Enemies
         
         void Start() {
             // Get the NavMeshAgent and Animator components
-            _agent = GetComponent<AgentAuthoring>();
-            _anim = GetComponent<Animator>();
+            if (GetComponent<AgentAuthoring>() != null) {
+                _agent = GetComponent<AgentAuthoring>();
+            } else { Debug.Log("There is no AgentAuthoring component on this Enemy object.");}
+
+            if (GetComponent<Animator>() != null) {
+                _anim = GetComponent<Animator>();
+            } else {Debug. Log("There is no Animator component of this Enemy object.");}
+
             if (_waypoints.Count == 0) {
                Debug.Log("There are no Waypoints!");
             }
@@ -74,10 +80,14 @@ namespace MetroMayhem.Enemies
             // Initialize
             _anim.SetFloat(_idealNumberHash, Random.Range(0, 11) * 0.1f);
             // Assign the initial destination for the NavMeshAgent
-            Vector3 tempPosition = _waypoints[_currentWayPointIndex].position;
-            tempPosition = new Vector3(tempPosition.x + Random.Range(-2.0f, 2.0f), transform.position.y,
-                tempPosition.z+ Random.Range(-2.0f, 2.0f));
-            _agent.SetDestination(tempPosition);
+            if (_waypoints[_currentWayPointIndex] != null)
+            {
+                Vector3 tempPosition = _waypoints[_currentWayPointIndex].position;
+                tempPosition = new Vector3(tempPosition.x + Random.Range(-2.0f, 2.0f), transform.position.y,
+                    tempPosition.z + Random.Range(-2.0f, 2.0f));
+                _agent.SetDestination(tempPosition);
+            }
+
             StartCoroutine(CheckDistance());
             // Dissolve Initialize
             if (_dissolveSpeed > 0) {
@@ -106,7 +116,9 @@ namespace MetroMayhem.Enemies
 
         private void Unpause() { 
             // _agent Start
-            _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+            if (_waypoints[_currentWayPointIndex] != null) {
+                _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+            }
             _isPaused = false;
         }
 
@@ -172,7 +184,9 @@ namespace MetroMayhem.Enemies
 
         private void UnFreezeEnemy() {
             if (!_isHit && !_isDead && _unfreePosition == this.transform.position) {
-                _agent.SetDestination(_waypoints[_currentWayPointIndex].position);  
+                if (_waypoints[_currentWayPointIndex] != null) {
+                    _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+                }
             }
             _unfreezeCharacter = 0f;
             _unfreePosition = this.transform.position;
@@ -183,7 +197,9 @@ namespace MetroMayhem.Enemies
                 if (_isClumped) {
                     _isClumped = false;
                     if (_currentWayPointIndex < _waypoints.Count - 1) {
-                        _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+                        if (_waypoints[_currentWayPointIndex] != null) {
+                            _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
+                        }
                     }
                 }
                 else
@@ -270,7 +286,7 @@ namespace MetroMayhem.Enemies
                 temp[i] = _parts[i].material;
             }
             foreach (var part in _parts) {
-                part.material = _DissovleMaterial;
+                part.material = _DissolveMaterial;
             }
             while (_dissolveAmount > 0) {
                 _dissolveAmount -= Time.deltaTime * _dissolveRate ;  

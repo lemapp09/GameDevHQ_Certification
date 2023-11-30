@@ -36,8 +36,7 @@ namespace MetroMayhem.Manager
             PlayMusic("Combat3");
         }
 
-        private void Start()
-        {
+        private void Start() {
             InitializeMusicClipGroups();
             InitializeMusicMixes();
             PlayMusic("Peaceful");
@@ -48,52 +47,51 @@ namespace MetroMayhem.Manager
         }
 
         public AudioClip PlayDeathSound() {
-            return _deathSounds[Random.Range(0,_hurtSounds.Count)];
+            return _deathSounds[Random.Range(0,_deathSounds.Count)];
         }
 
-        private void PlayMusic(string musicGroupName)
-        {
+        private void PlayMusic(string musicGroupName) {
             StopAllCoroutines();
-            _currentMusicGroup = GetMusicGroup(musicGroupName);
+            var temp = GetMusicGroup(musicGroupName);
+            if (temp != null) {
+                _currentMusicGroup = temp;
+            }
+
             PlayNextTrack();
         }
 
-        private void PlayNextTrack()
-        {
+        private void PlayNextTrack() {
             var clip = _currentMusicGroup.GetNextMusicClip();
             ToggleCurrentMix();
             _musicMixes[_currentMixIndex].PlayClip(clip);
             StartCoroutine(QueueNextTrack(clip.length));
         }
 
-        private void ToggleCurrentMix()
-        {
+        private void ToggleCurrentMix() {
             _currentMixIndex = _currentMixIndex == 0 ? 1 : 0;
         }
 
         private MusicClipGroup GetMusicGroup(string musicGroupName)
         {
-            return _musicClipGroups.FirstOrDefault(group => group.name == musicGroupName);
+            if (_musicClipGroups != null) {
+                return _musicClipGroups.FirstOrDefault(group => group.name == musicGroupName);
+            }
+            return null;
         }
 
-        IEnumerator QueueNextTrack(float delay)
-        {
+        IEnumerator QueueNextTrack(float delay) {
             yield return new WaitForSeconds(delay);
             PlayNextTrack();
         }
 
-        private void InitializeMusicClipGroups()
-        {
-            foreach (var musicClipGroup in _musicClipGroups)
-            {
+        private void InitializeMusicClipGroups() {
+            foreach (var musicClipGroup in _musicClipGroups) {
                 musicClipGroup.Initialize(this);
             }
         }
 
-        private void InitializeMusicMixes()
-        {
-            foreach (var musicMix in _musicMixes)
-            {
+        private void InitializeMusicMixes() {
+            foreach (var musicMix in _musicMixes) {
                 musicMix.Initialize(this);
             }
         }

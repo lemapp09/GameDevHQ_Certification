@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace MetroMayhem.Enemies
@@ -13,7 +10,12 @@ namespace MetroMayhem.Enemies
         {
             if (other.gameObject.CompareTag("Enemy"))
             {
-                other.GetComponent<EnemyAI>().ReachedEnd();
+                var enemyAI = other.GetComponent<EnemyAI>();
+                if (enemyAI != null)
+                {
+                    enemyAI.ReachedEnd();
+                }
+
             }
         }
     }

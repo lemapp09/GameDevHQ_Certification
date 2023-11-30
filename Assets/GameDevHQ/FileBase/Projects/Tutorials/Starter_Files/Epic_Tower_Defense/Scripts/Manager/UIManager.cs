@@ -72,6 +72,7 @@ namespace MetroMayhem.Manager
         [SerializeField] private Button _quitNoButton;
         
         private int _dismantlePlatformID, _dismantleWeaponID;
+        [SerializeField] private Image[] _pauseLevelIndicators;
         #endregion
         private void Start() {
             DisplayAffordTower();
@@ -287,6 +288,10 @@ namespace MetroMayhem.Manager
         private void QuitGameNo() {
             _quitPanel.SetActive(false);
             GameManager.Instance.UnpauseCurrentLevel();
+        }
+
+        public void PauseLevel(int player, int indicator, bool isOn) {
+            _pauseLevelIndicators[player * 8 + indicator].color = isOn ? Color.red : Color.white;
         }
         
         private void OnEnable() {
