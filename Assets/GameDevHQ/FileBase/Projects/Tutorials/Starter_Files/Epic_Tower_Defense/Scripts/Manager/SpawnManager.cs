@@ -1,7 +1,5 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using MetroMayhem.Enemies;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -11,26 +9,30 @@ namespace MetroMayhem.Manager
     public class SpawnManager : MonoSingleton<SpawnManager>
     {
         private List<GameObject> _listOfEnemyPrefabs;
-        [SerializeField] private int _howManyEnemyToSPawn, howManyEnemyToSpawn;
+        [SerializeField] private int _howManyEnemyToSPawn, _spawnIncreasePerLevel = 20;
         [SerializeField] private int _currentEnemyToSpawn, _currentLevel;
-        [SerializeField] private float _timeBetweenSpawns, timeBetweenSpawns;
+        [SerializeField] private float _timeBetweenSpawns, _decreaseSpawnTimeAmount = 0.01f ;
         [SerializeField] private bool _isLevelOver;
         private float _timeToNextSpawn = -1f;   // Seeds the Spawn countdown to Spawn immediately
+        private int howManyEnemyToSpawn; // increase each level
+        private float timeBetweenSpawns; // decreases each level
 
         /// <summary>
         /// Connects to events
         /// </summary>
         private void OnEnable() {
-            GameManager.StartLevel += StartNewLevel;
-            GameManager.StartPlay += StartSpawningEnemies;
-            GameManager.PauseLevel += StopSpawningEnemies;
-            GameManager.UnpauseLevel += StartSpawningEnemies;
-            GameManager.StopLevel += RePoolEnemies;
-            GameManager.RestartLevel += RePoolEnemies;
+            // GameMaster broadcast events, SpawnMaster is either Paused or unPaused
+            GameManager.StartLevel += StartNewLevel;            // Pause
+            GameManager.StartPlay += StartSpawningEnemies;      // UnPause
+            GameManager.PauseLevel += StopSpawningEnemies;      // Pause
+            GameManager.UnpauseLevel += StartSpawningEnemies;   // UnPause
+            GameManager.StopLevel += RePoolEnemies;             // Pause, Level Won
+            GameManager.RestartLevel += RePoolEnemies;          // Pause, Level Lost
         }
         
         public void StartNewLevel()
         {
+            UIManager.Instance.PauseLevel(1,0,true); // SpawnManager, StartLevel, On
             _currentEnemyToSpawn = 0;
             _currentLevel = GameManager.Instance.GetCurrentLevel();
             _isLevelOver = false;
@@ -43,6 +45,8 @@ namespace MetroMayhem.Manager
         /// spawn EnemyAI GameObjects
         /// </summary>
         public void StartSpawningEnemies() {
+            UIManager.Instance.PauseLevel(1,1,true); // SpawnManager, StartPlay, On
+            UIManager.Instance.PauseLevel(1,3,true); // SpawnManager, UnpauseLevel, On
             StartCoroutine(Spawn());
         }
 
@@ -51,6 +55,7 @@ namespace MetroMayhem.Manager
         /// the Spawn Manager will stop spawning EnemyAI
         /// </summary>
         private void StopSpawningEnemies() {
+            UIManager.Instance.PauseLevel(1,2,true); // SpawnManager, PauseLevel, On
             StopAllCoroutines();
         }
         
@@ -60,8 +65,8 @@ namespace MetroMayhem.Manager
         /// </summary>
         private IEnumerator Spawn()
         {
-            timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * 0.01f;
-            howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * 20;
+            timeBetweenSpawns = _timeBetweenSpawns - _currentLevel * _decreaseSpawnTimeAmount;
+            howManyEnemyToSpawn = _howManyEnemyToSPawn + _currentLevel * _spawnIncreasePerLevel;
             GameManager.Instance.SetNumberOfEnemy(howManyEnemyToSpawn);
             while (!_isLevelOver) {
                 if (_timeToNextSpawn < 0f && _currentEnemyToSpawn < howManyEnemyToSpawn) {
@@ -95,6 +100,8 @@ namespace MetroMayhem.Manager
         /// </summary>
         private void RePoolEnemies()
         {
+            UIManager.Instance.PauseLevel(1,4,true); // StopLevel, StartLevel, On
+            UIManager.Instance.PauseLevel(1,5,true); // RestartLevel, StartLevel, On
             _isLevelOver = true;
             List<GameObject> temp = new List<GameObject>();
             foreach (Transform child in this.transform) {

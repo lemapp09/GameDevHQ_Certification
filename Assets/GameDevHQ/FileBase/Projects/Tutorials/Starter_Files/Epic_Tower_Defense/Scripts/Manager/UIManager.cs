@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
@@ -33,7 +32,7 @@ namespace MetroMayhem.Manager
         [SerializeField] private Button _fastForwardButton;
         [SerializeField] private Button _settingsBuitton;
         [SerializeField] private GameObject _settingsPanel;
-        private bool _isPaused, _blinkPlayImage;
+        private bool _isPausedButtonClicked, _blinkPlayImage;
         private float _blinkInterval;
         
         [Header("Health Level")] [SerializeField]
@@ -125,12 +124,12 @@ namespace MetroMayhem.Manager
         }
 
         public void PauseClicked() {
-            if (_isPaused) {
-                _isPaused = false;
+            if (_isPausedButtonClicked) {
+                _isPausedButtonClicked = false;
                 _pauseImage.gameObject.SetActive(false); 
                 Manager.GameManager.Instance.UnpauseCurrentLevel();
             } else {
-                _isPaused = true;
+                _isPausedButtonClicked = true;
                 _pauseImage.gameObject.SetActive(true); 
                 Manager.GameManager.Instance.PauseCurrentLevel();
             }
@@ -290,7 +289,11 @@ namespace MetroMayhem.Manager
             GameManager.Instance.UnpauseCurrentLevel();
         }
 
-        public void PauseLevel(int player, int indicator, bool isOn) {
+        public void PauseLevel(int player, int indicator, bool isOn) { 
+        /*
+         Players: (0) GameMaster, (1) SpawnManager,
+        Indicators: (0) startLevel, (1) startPlay, (2) pauseLevel, (3) unpauseLevel, (4) stopLevel, (5) restartLevel
+        */
             _pauseLevelIndicators[player * 8 + indicator].color = isOn ? Color.red : Color.white;
         }
         

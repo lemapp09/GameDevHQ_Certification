@@ -134,11 +134,13 @@ namespace MetroMayhem.Manager
 
         public void PauseCurrentLevel() {
             _isPaused = true;
+            UIManager.Instance.PauseLevel(0,2,true); // GameManager, PauseLevel, On
             PauseLevel?.Invoke();
         }
 
         public void UnpauseCurrentLevel() {
             _isPaused = false;
+            UIManager.Instance.PauseLevel(0,3,true); // GameManager, UnpauseLevel, On
             UnpauseLevel?.Invoke();
         }
 
@@ -158,17 +160,19 @@ namespace MetroMayhem.Manager
             SceneManager.LoadScene(2);
         }
 
+        public void StopCurrentLevel() {
+            UIManager.Instance.PauseLevel(0,4,true); // GameManager, StopLevel, On
+            UIManager.Instance.ResetFastForward();
+            StopLevel?.Invoke();
+        }
+
         public void RestartCurrentLevel() {  // Lose
+            UIManager.Instance.PauseLevel(0,5,true); // GameManager, StopLevel, On
             UIManager.Instance.LevelDisplay("LEVEL  " + _currentLevel + "\nLOST");
             StopLevel?.Invoke();
             RestoreLevel();
             UIManager.Instance.ResetFastForward();
             RestartLevel?.Invoke();
-        }
-
-        public void StopCurrentLevel() {
-            UIManager.Instance.ResetFastForward();
-            StopLevel?.Invoke();
         }
 
         public int GetCurrentLevel() {
