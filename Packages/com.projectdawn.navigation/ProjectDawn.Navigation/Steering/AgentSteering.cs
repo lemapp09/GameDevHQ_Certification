@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 
@@ -6,6 +7,7 @@ namespace ProjectDawn.Navigation
     /// <summary>
     /// Agent's steering towards destination with arrival.
     /// </summary>
+    [Obsolete("AgentSteering is deprecated, please use AgentLocomotion!", false)]
     public struct AgentSteering : IComponentData
     {
         /// <summary>

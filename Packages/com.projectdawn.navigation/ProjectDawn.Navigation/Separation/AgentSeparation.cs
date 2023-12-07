@@ -16,6 +16,8 @@ namespace ProjectDawn.Navigation
         /// </summary>
         public float Weight;
 
+        public NavigationLayers Layers;
+
         /// <summary>
         /// Returns default configuration.
         /// </summary>
@@ -23,6 +25,7 @@ namespace ProjectDawn.Navigation
         {
             Radius = 2,
             Weight = 1,
+            Layers = NavigationLayers.Everything,
         };
     }
 }

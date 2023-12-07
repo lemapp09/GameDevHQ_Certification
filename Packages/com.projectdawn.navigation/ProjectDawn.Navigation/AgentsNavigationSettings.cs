@@ -111,6 +111,8 @@ namespace ProjectDawn.Navigation
         {
             foreach (var setting in m_SubSettings)
             {
+                if (setting == null)
+                    continue;
                 if (setting.GetType() == type)
                     return true;
             }
@@ -127,6 +129,8 @@ namespace ProjectDawn.Navigation
 
             foreach (var setting in Instance.m_SubSettings)
             {
+                if (setting == null)
+                    continue;
                 if (setting.GetType() == typeof(T))
                 {
                     return (T)setting;

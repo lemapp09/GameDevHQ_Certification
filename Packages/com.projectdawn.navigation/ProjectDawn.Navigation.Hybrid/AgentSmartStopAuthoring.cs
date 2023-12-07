@@ -12,12 +12,11 @@ namespace ProjectDawn.Navigation.Hybrid
     [HelpURL("https://lukaschod.github.io/agents-navigation-docs/manual/game-objects/smart-stop.html")]
     public class AgentSmartStopAuthoring : MonoBehaviour
     {
-        /// <summary>
-        /// This option allows agent to do smarter stop decision than moving in group.
-        /// It works under assumption that by reaching nearby agent that is already idle and have similar destination it can stop as destination is reached.
-        /// </summary>
         [SerializeField]
         protected HiveMindStop m_HiveMindStop = HiveMindStop.Default;
+
+        [SerializeField]
+        protected GiveUpStop m_GiveUpStop = GiveUpStop.Default;
 
         Entity m_Entity;
 
@@ -27,6 +26,7 @@ namespace ProjectDawn.Navigation.Hybrid
         public AgentSmartStop DefaulSmartStop => new AgentSmartStop
         {
             HiveMindStop = m_HiveMindStop,
+            GiveUpStop = m_GiveUpStop,
         };
 
         /// <summary>
@@ -49,13 +49,16 @@ namespace ProjectDawn.Navigation.Hybrid
             var world = World.DefaultGameObjectInjectionWorld;
             m_Entity = GetComponent<AgentAuthoring>().GetOrCreateEntity();
             world.EntityManager.AddComponentData(m_Entity, DefaulSmartStop);
+            world.EntityManager.AddComponent<GiveUpStopTimer>(m_Entity);
         }
 
         void OnDestroy()
         {
             var world = World.DefaultGameObjectInjectionWorld;
-            if (world != null)
-                world.EntityManager.RemoveComponent<AgentSmartStop>(m_Entity);
+            if (world == null)
+                return;
+            world.EntityManager.RemoveComponent<AgentSmartStop>(m_Entity);
+            world.EntityManager.RemoveComponent<GiveUpStopTimer>(m_Entity);
         }
 
         void OnEnable()
@@ -79,11 +82,7 @@ namespace ProjectDawn.Navigation.Hybrid
     {
         public override void Bake(AgentSmartStopAuthoring authoring)
         {
-#if UNITY_ENTITIES_VERSION_65
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), authoring.DefaulSmartStop);
-#else
-            AddComponent(authoring.DefaulSmartStop);
-#endif
         }
     }
 }

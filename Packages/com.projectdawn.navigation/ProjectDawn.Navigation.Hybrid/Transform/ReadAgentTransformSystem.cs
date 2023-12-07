@@ -21,6 +21,7 @@ namespace ProjectDawn.Navigation.Hybrid
         {
             m_Query = QueryBuilder()
                 .WithAll<Agent>()
+                .WithAll<AgentBody>()
                 .WithAllRW<Transform>()
                 .WithAll<LocalTransform>()
                 .Build();

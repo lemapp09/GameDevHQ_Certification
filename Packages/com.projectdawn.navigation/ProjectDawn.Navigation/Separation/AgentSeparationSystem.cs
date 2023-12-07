@@ -47,7 +47,7 @@ namespace ProjectDawn.Navigation
                         Radius = radius,
                     };
 
-                    Spatial.QueryCylinder(transform.Position, radius, shape.Height, Spatial.QueryCapacity, ref action);
+                    Spatial.QueryCylinder(transform.Position, radius, shape.Height, Spatial.QueryCapacity, ref action, separation.Layers);
 
                     if (action.Weight > 0)
                         body.Force += action.Force * separation.Weight;
@@ -64,7 +64,7 @@ namespace ProjectDawn.Navigation
                         Radius = radius,
                     };
 
-                    Spatial.QueryCircle(transform.Position, radius, Spatial.QueryCapacity, ref action);
+                    Spatial.QueryCircle(transform.Position, radius, Spatial.QueryCapacity, ref action, separation.Layers);
 
                     if (action.Weight > 0)
                         body.Force.xy += action.Force * separation.Weight;

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -20,9 +21,17 @@ namespace ProjectDawn.Navigation
         [SerializeField]
         [Tooltip("The size of single cell.")]
         float3 m_CellSize = 3;
+
+        [SerializeField]
+        [Tooltip("The maximum number of nearby neighbors will be checked to find closest.")]
+        QueryCheckMode m_QueryCheck = QueryCheckMode._32;
+
         [SerializeField]
         [Range(0, 16), Tooltip("The maximum number of nearby neighbors to be included in the avoidance/collision systems will be determined.")]
         int m_QueryCapacity = 0;
+
+        [SerializeField]
+        NavigationLayerNames m_Layers = new();
 
         /// <summary>
         /// The size of single cell.
@@ -32,6 +41,18 @@ namespace ProjectDawn.Navigation
         /// The maximum number of nearby neighbors to be included in the avoidance/collision systems will be determined.
         /// </summary>
         public int QueryCapacity => m_QueryCapacity;
+        /// <summary>
+        /// The maximum number of nearby neighbors will be checked to find closest.
+        /// </summary>
+        public int QueryChecks => (int)m_QueryCheck;
+
+        public string[] LayerNames => m_Layers.Names;
+
+        public enum QueryCheckMode : int
+        {
+            _16 = 16,
+            _32 = 32,
+        }
     }
 
     /// <summary>
@@ -40,14 +61,14 @@ namespace ProjectDawn.Navigation
     /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateBefore(typeof(AgentForceSystemGroup))]
-    [UpdateInGroup(typeof(AgentSystemGroup))]
+    [UpdateInGroup(typeof(AgentSpatialSystemGroup))]
     public partial struct AgentSpatialPartitioningSystem : ISystem
     {
         internal const int InitialCapacity = 256;
         internal const int MaxCellsPerUnit = 16;
 
         NativeParallelMultiHashMap<int3, int> m_Map;
+        NativeList<Agent> m_Agents;
         NativeList<Entity> m_Entities;
         NativeList<AgentBody> m_Bodies;
         NativeList<AgentShape> m_Shapes;
@@ -74,6 +95,7 @@ namespace ProjectDawn.Navigation
                 {
                     Map = m_Map,
                     Entities = m_Entities,
+                    Agents = m_Agents,
                     Bodies = m_Bodies,
                     Shapes = m_Shapes,
                     Transforms = m_Transforms,
@@ -85,6 +107,7 @@ namespace ProjectDawn.Navigation
             dependency = new ClearJob
             {
                 Entities = m_Entities,
+                Agents = m_Agents,
                 Bodies = m_Bodies,
                 Shapes = m_Shapes,
                 Transforms = m_Transforms,
@@ -94,6 +117,7 @@ namespace ProjectDawn.Navigation
             var copyHandle = new CopyJob
             {
                 Entities = m_Entities,
+                Agents = m_Agents,
                 Bodies = m_Bodies,
                 Shapes = m_Shapes,
                 Transforms = m_Transforms,
@@ -106,7 +130,7 @@ namespace ProjectDawn.Navigation
                 {
                     Map = m_Map.AsParallelWriter(),
                     CellSize = m_CellSize,
-                }.Schedule(dependency);
+                }.ScheduleParallel(dependency);
             }
             else
             {
@@ -114,7 +138,7 @@ namespace ProjectDawn.Navigation
                 {
                     Map = m_Map.AsParallelWriter(),
                     CellSize = m_CellSize,
-                }.Schedule(dependency);
+                }.ScheduleParallel(dependency);
             }
 
             return JobHandle.CombineDependencies(copyHandle, hashHandle);
@@ -136,11 +160,13 @@ namespace ProjectDawn.Navigation
 
             m_Map = new NativeParallelMultiHashMap<int3, int>(UseLimitedQuery ? InitialCapacity * MaxCellsPerUnit : InitialCapacity, Allocator.Persistent);
             m_Entities = new NativeList<Entity>(InitialCapacity, Allocator.Persistent);
+            m_Agents = new NativeList<Agent>(InitialCapacity, Allocator.Persistent);
             m_Bodies = new NativeList<AgentBody>(InitialCapacity, Allocator.Persistent);
             m_Shapes = new NativeList<AgentShape>(InitialCapacity, Allocator.Persistent);
             m_Transforms = new NativeList<LocalTransform>(InitialCapacity, Allocator.Persistent);
 
             m_Query = QueryBuilder()
+                .WithAll<Agent>()
                 .WithAll<AgentBody>()
                 .WithAll<AgentShape>()
                 .WithAll<LocalTransform>()
@@ -150,12 +176,14 @@ namespace ProjectDawn.Navigation
             {
                 m_Map = m_Map,
                 m_Entities = m_Entities,
+                m_Agents = m_Agents,
                 m_Bodies = m_Bodies,
                 m_Shapes = m_Shapes,
                 m_Transforms = m_Transforms,
                 m_Capacity = m_Capacity,
                 m_CellSize = m_CellSize,
                 m_QueryCapacity = m_QueryCapacity,
+                m_QueryChecks = AgentsNavigationSettings.Get<SpatialPartitioningSubSettings>().QueryChecks,
             });
         }
 
@@ -164,6 +192,7 @@ namespace ProjectDawn.Navigation
         {
             m_Map.Dispose();
             m_Entities.Dispose();
+            m_Agents.Dispose();
             m_Bodies.Dispose();
             m_Shapes.Dispose();
             m_Transforms.Dispose();
@@ -180,19 +209,21 @@ namespace ProjectDawn.Navigation
         {
             internal NativeParallelMultiHashMap<int3, int> m_Map;
             internal NativeList<Entity> m_Entities;
+            internal NativeList<Agent> m_Agents;
             internal NativeList<AgentBody> m_Bodies;
             internal NativeList<AgentShape> m_Shapes;
             internal NativeList<LocalTransform> m_Transforms;
             internal int m_Capacity;
             internal float3 m_CellSize;
             internal int m_QueryCapacity;
+            internal int m_QueryChecks;
 
             public int QueryCapacity => m_QueryCapacity;
 
             /// <summary>
             /// Query agents that intersect with the line.
             /// </summary>
-            public int QueryLine<T>(float3 from, float3 to, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QueryLine<T>(float3 from, float3 to, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 int count = 0;
 
@@ -235,6 +266,8 @@ namespace ProjectDawn.Navigation
                     {
                         do
                         {
+                            if (!layers.Any(m_Agents[index].Layers))
+                                continue;
                             action.Execute(m_Entities[index], m_Bodies[index], m_Shapes[index], m_Transforms[index]);
                             count++;
                         }
@@ -280,7 +313,7 @@ namespace ProjectDawn.Navigation
             /// <summary>
             /// Query agents that intersect with the sphere.
             /// </summary>
-            public int QuerySphere<T>(float3 center, float radius, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QuerySphere<T>(float3 center, float radius, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 int count = 0;
 
@@ -299,6 +332,8 @@ namespace ProjectDawn.Navigation
                             {
                                 do
                                 {
+                                    if (!layers.Any(m_Agents[index].Layers))
+                                        continue;
                                     action.Execute(m_Entities[index], m_Bodies[index], m_Shapes[index], m_Transforms[index]);
                                     count++;
                                 }
@@ -314,7 +349,7 @@ namespace ProjectDawn.Navigation
             /// <summary>
             /// Query agents that intersect with the sphere.
             /// </summary>
-            public int QueryCircle<T>(float3 center, float radius, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QueryCircle<T>(float3 center, float radius, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 int count = 0;
 
@@ -332,6 +367,8 @@ namespace ProjectDawn.Navigation
                         {
                             do
                             {
+                                if (!layers.Any(m_Agents[index].Layers))
+                                    continue;
                                 action.Execute(m_Entities[index], m_Bodies[index], m_Shapes[index], m_Transforms[index]);
                                 count++;
                             }
@@ -346,10 +383,10 @@ namespace ProjectDawn.Navigation
             /// <summary>
             /// Query agents that intersect with the circle.
             /// </summary>
-            public int QueryCircle<T>(float3 center, float radius, int maxCount, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QueryCircle<T>(float3 center, float radius, int maxCount, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 if (maxCount == 0)
-                    return QueryCircle(center, radius, ref action);
+                    return QueryCircle(center, radius, ref action, layers);
 
                 var entries = new FixedEntries(center.xy, -1, float.MaxValue, maxCount);
 
@@ -381,10 +418,12 @@ namespace ProjectDawn.Navigation
                         {
                             do
                             {
+                                if (!layers.Any(m_Agents[index].Layers))
+                                    continue;
                                 if (entries.Add(index, m_Transforms[index].Position.xy))
                                 {
                                     count++;
-                                    if (count == FixedEntries.Capacity)
+                                    if (count == m_QueryChecks)
                                         goto FULL;
                                 }
                             }
@@ -422,7 +461,7 @@ namespace ProjectDawn.Navigation
             /// <summary>
             /// Query agents that intersect with the cylinder.
             /// </summary>
-            public int QueryCylinder<T>(float3 center, float radius, float height, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QueryCylinder<T>(float3 center, float radius, float height, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 int count = 0;
 
@@ -441,6 +480,8 @@ namespace ProjectDawn.Navigation
                             {
                                 do
                                 {
+                                    if (!layers.Any(m_Agents[index].Layers))
+                                        continue;
                                     action.Execute(m_Entities[index], m_Bodies[index], m_Shapes[index], m_Transforms[index]);
                                     count++;
                                 }
@@ -456,10 +497,10 @@ namespace ProjectDawn.Navigation
             /// <summary>
             /// Query agents that intersect with the sphere.
             /// </summary>
-            public int QueryCylinder<T>(float3 center, float radius, float height, int maxCount, ref T action) where T : unmanaged, ISpatialQueryEntity
+            public int QueryCylinder<T>(float3 center, float radius, float height, int maxCount, ref T action, NavigationLayers layers = NavigationLayers.Everything) where T : unmanaged, ISpatialQueryEntity
             {
                 if (maxCount == 0)
-                    return QueryCylinder(center, radius, height, ref action);
+                    return QueryCylinder(center, radius, height, ref action, layers);
 
                 var entries = new FixedEntries(center.xz, -1, float.MaxValue, maxCount);
 
@@ -492,10 +533,12 @@ namespace ProjectDawn.Navigation
                             {
                                 do
                                 {
+                                    if (!layers.Any(m_Agents[index].Layers))
+                                        continue;
                                     if (entries.Add(index, m_Transforms[index].Position.xz))
                                     {
                                         count++;
-                                        if (count == FixedEntries.Capacity)
+                                        if (count == m_QueryChecks)
                                             goto FULL;
                                     }
                                 }
@@ -585,7 +628,7 @@ namespace ProjectDawn.Navigation
 
             unsafe struct FixedEntries
             {
-                public const int Capacity = 16;
+                public const int Capacity = 32;
 
                 float2 m_Center;
                 fixed int m_Indices[Capacity];
@@ -661,13 +704,15 @@ namespace ProjectDawn.Navigation
     partial struct CopyJob : IJobEntity
     {
         public NativeList<Entity> Entities;
+        public NativeList<Agent> Agents;
         public NativeList<AgentBody> Bodies;
         public NativeList<AgentShape> Shapes;
         public NativeList<LocalTransform> Transforms;
 
-        void Execute(Entity entity, in AgentBody body, in AgentShape shape, in LocalTransform transform)
+        void Execute(Entity entity, in Agent agent, in AgentBody body, in AgentShape shape, in LocalTransform transform)
         {
             Entities.Add(entity);
+            Agents.Add(agent);
             Bodies.Add(body);
             Shapes.Add(shape);
             Transforms.Add(transform);
@@ -679,7 +724,7 @@ namespace ProjectDawn.Navigation
     {
         public NativeParallelMultiHashMap<int3, int>.ParallelWriter Map;
         public float3 CellSize;
-        void Execute([EntityIndexInQuery] int entityInQueryIndex, in AgentBody body, in AgentShape shape, in LocalTransform transform)
+        void Execute([EntityIndexInQuery] int entityInQueryIndex, in Agent agent, in AgentBody body, in AgentShape shape, in LocalTransform transform)
         {
             int3 cell = (int3) math.round((transform.Position) / CellSize);
             Map.Add(cell, entityInQueryIndex);
@@ -691,7 +736,7 @@ namespace ProjectDawn.Navigation
     {
         public NativeParallelMultiHashMap<int3, int>.ParallelWriter Map;
         public float3 CellSize;
-        void Execute([EntityIndexInQuery] int entityInQueryIndex, in AgentBody body, in AgentShape shape, in LocalTransform transform)
+        void Execute([EntityIndexInQuery] int entityInQueryIndex, in Agent agent, in AgentBody body, in AgentShape shape, in LocalTransform transform)
         {
             if (shape.Type == ShapeType.Cylinder)
             {
@@ -749,6 +794,7 @@ namespace ProjectDawn.Navigation
     {
         public NativeParallelMultiHashMap<int3, int> Map;
         public NativeList<Entity> Entities;
+        public NativeList<Agent> Agents;
         public NativeList<AgentBody> Bodies;
         public NativeList<AgentShape> Shapes;
         public NativeList<LocalTransform> Transforms;
@@ -757,6 +803,7 @@ namespace ProjectDawn.Navigation
         {
             Map.Clear();
             Entities.Clear();
+            Agents.Clear();
             Bodies.Clear();
             Shapes.Clear();
             Transforms.Clear();
@@ -768,6 +815,7 @@ namespace ProjectDawn.Navigation
     {
         public NativeParallelMultiHashMap<int3, int> Map;
         public NativeList<Entity> Entities;
+        public NativeList<Agent> Agents;
         public NativeList<AgentBody> Bodies;
         public NativeList<AgentShape> Shapes;
         public NativeList<LocalTransform> Transforms;
@@ -778,6 +826,7 @@ namespace ProjectDawn.Navigation
         {
             Map.Capacity = MapCapacity;
             Entities.Capacity = Capacity;
+            Agents.Capacity = Capacity;
             Bodies.Capacity = Capacity;
             Shapes.Capacity = Capacity;
             Transforms.Capacity = Capacity;

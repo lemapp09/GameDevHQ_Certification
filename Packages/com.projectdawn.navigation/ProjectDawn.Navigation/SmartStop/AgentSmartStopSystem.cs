@@ -5,12 +5,11 @@ using Unity.Transforms;
 using Unity.Burst;
 using static Unity.Entities.SystemAPI;
 
-namespace ProjectDawn.Navigation.Sample.Zerg
+namespace ProjectDawn.Navigation
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentSystemGroup))]
-    [UpdateAfter(typeof(AgentTransformSystemGroup))]
+    [UpdateInGroup(typeof(AgentActionSystemGroup))]
     public partial struct AgentSmartStopSystem : ISystem
     {
         ComponentLookup<AgentSmartStop> m_SmartStopLookup;
@@ -32,6 +31,7 @@ namespace ProjectDawn.Navigation.Sample.Zerg
             {
                 Spatial = spatial,
                 SmartStopLookup = m_SmartStopLookup,
+                DeltaTime = Time.DeltaTime,
             }.Schedule();
         }
 
@@ -42,11 +42,19 @@ namespace ProjectDawn.Navigation.Sample.Zerg
             public AgentSpatialPartitioningSystem.Singleton Spatial;
             [ReadOnly]
             public ComponentLookup<AgentSmartStop> SmartStopLookup;
+            public float DeltaTime;
 
-            public void Execute(Entity entity, ref AgentBody body, in AgentSmartStop smartStop, in LocalTransform transform)
+            public void Execute(Entity entity, ref AgentBody body, ref GiveUpStopTimer timer, in AgentSmartStop smartStop, in LocalTransform transform)
             {
                 if (body.IsStopped)
                     return;
+
+                // Check if give up needs destination update
+                if (smartStop.GiveUpStop.Enabled && math.any(body.Destination != timer.Destination))
+                {
+                    timer.Destination = body.Destination;
+                    timer.Progress = 0.0f;
+                }
 
                 // This is just a high performance foreach for nearby agents
                 // It is basically as: foreach (var nearbyAgent in GetNearbyAgents()) Spatial.Execute(...)
@@ -61,11 +69,28 @@ namespace ProjectDawn.Navigation.Sample.Zerg
                 };
                 Spatial.QuerySphere(transform.Position, smartStop.HiveMindStop.Radius, ref action);
 
+                // Check, if agent should do hive mind stop
                 // If any nearby agent reached destination, this agent should stop too
-                if (!action.Stop)
+                if (action.Stop)
+                {
+                    body.Stop();
                     return;
+                }
 
-                body.Stop();
+                // Check, if agent should do give up stop
+                if (action.Accumulate)
+                {
+                    timer.Progress = math.min(timer.Progress + DeltaTime * smartStop.GiveUpStop.FatigueSpeed, 1.0f);
+                    if (timer.Progress == 1.0f)
+                    {
+                        body.Stop();
+                        return;
+                    }
+                }
+                else
+                {
+                    timer.Progress = math.max(timer.Progress - DeltaTime * smartStop.GiveUpStop.RecoverySpeed, 0.0f);
+                }
             }
 
             [BurstCompile]
@@ -82,6 +107,8 @@ namespace ProjectDawn.Navigation.Sample.Zerg
                 // Output if this agent should stop
                 public bool Stop;
 
+                public bool Accumulate;
+
                 public void Execute(Entity entity, AgentBody body, AgentShape shape, LocalTransform transform)
                 {
                     // Exclude itself
@@ -96,6 +123,9 @@ namespace ProjectDawn.Navigation.Sample.Zerg
                     float distance = math.distance(Transform.Position, transform.Position);
                     if (SmartStop.HiveMindStop.Radius < distance)
                         return;
+
+                    if (SmartStop.GiveUpStop.Enabled)
+                        Accumulate = true;
 
                     // Check if neaby one has smart stop
                     if (!SmartStopLookup.TryGetComponent(entity, out AgentSmartStop brain) || !brain.HiveMindStop.Enabled)

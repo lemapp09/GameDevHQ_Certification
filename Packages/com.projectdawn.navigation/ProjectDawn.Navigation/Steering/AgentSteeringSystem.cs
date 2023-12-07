@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
@@ -11,6 +12,7 @@ namespace ProjectDawn.Navigation
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
     [UpdateInGroup(typeof(AgentSteeringSystemGroup))]
+    [Obsolete("AgentSteeringSystem is deprecated, please use AgentSeekingSystem!", false)]
     public partial struct AgentSteeringSystem : ISystem
     {
         [BurstCompile]

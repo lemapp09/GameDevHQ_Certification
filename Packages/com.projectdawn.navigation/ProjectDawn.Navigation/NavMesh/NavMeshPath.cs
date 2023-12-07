@@ -57,6 +57,12 @@ namespace ProjectDawn.Navigation
         /// </summary>
         public bool AutoRepath;
         /// <summary>
+        /// Constraint agent to be on the surface. It is useful to disable then used with physics, to allow more freedom motion and precision.
+        /// </summary>
+        public bool Grounded;
+        [System.Obsolete("Constrained is deprecated, please use Grounded.")]
+        public bool Constrained { get => Grounded; set => Grounded = value; }
+        /// <summary>
         /// Maximum distance on each axis will be used when attempting to map the agent's position or destination onto navmesh.
         /// The higher the value, the bigger the performance cost.
         /// </summary>

@@ -1,3 +1,4 @@
+using System;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Burst;
@@ -7,7 +8,8 @@ namespace ProjectDawn.Navigation
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentTransformSystemGroup))]
+    [UpdateInGroup(typeof(AgentLocomotionSystemGroup))]
+    [Obsolete("AgentForceSystem is deprecated, please use AgentLocomotionSystem!", false)]
     public partial struct AgentForceSystem : ISystem
     {
         [BurstCompile]
@@ -19,10 +21,6 @@ namespace ProjectDawn.Navigation
             }.ScheduleParallel();
         }
 
-        public void OnCreate(ref SystemState state) { }
-
-        public void OnDestroy(ref SystemState state) { }
-
         [BurstCompile]
         partial struct AgentForceJob : IJobEntity
         {
@@ -33,6 +31,7 @@ namespace ProjectDawn.Navigation
                 if (body.IsStopped)
                     return;
 
+                // Check, if we reached the destination
                 float remainingDistance = body.RemainingDistance;
                 if (remainingDistance <= steering.StoppingDistance + 1e-3f)
                 {

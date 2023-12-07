@@ -6,7 +6,7 @@ namespace ProjectDawn.Navigation.Editor
 {
     static class AgentsNavigationMenuItems
     {
-        [MenuItem("GameObject/AI/Agents Navigation/Agent Cylinder", false, 10)]
+        [MenuItem("GameObject/AI/Agent Cylinder", false, 10)]
         static void CreateAgentCylinder(MenuCommand menuCommand)
         {
             // Create a custom game object
@@ -27,7 +27,7 @@ namespace ProjectDawn.Navigation.Editor
             Selection.activeObject = agent;
         }
 
-        [MenuItem("GameObject/AI/Agents Navigation/Agent Circle", false, 10)]
+        [MenuItem("GameObject/AI/Agent Circle", false, 11)]
         static void CreateAgentCircle(MenuCommand menuCommand)
         {
             // Create a custom game object

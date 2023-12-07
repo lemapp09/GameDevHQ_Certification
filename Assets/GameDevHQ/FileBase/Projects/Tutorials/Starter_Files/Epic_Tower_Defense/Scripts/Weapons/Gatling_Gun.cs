@@ -5,6 +5,7 @@ using UnityEngine;
 namespace MetroMayhem.Weapons
 {
     #region message
+
     /// <summary>
     /// This script will allow you to view the presentation of the Turret and use it within your project.
     /// Please feel free to extend this script however you'd like. To access this script from another script
@@ -17,6 +18,7 @@ namespace MetroMayhem.Weapons
     /// Al Heck
     /// Jonathan Weinberger
     /// </summary>
+
     #endregion
 
     [RequireComponent(typeof(AudioSource))] //Require Audio Source component

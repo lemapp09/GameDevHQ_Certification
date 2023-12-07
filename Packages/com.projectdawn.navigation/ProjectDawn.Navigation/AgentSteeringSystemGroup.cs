@@ -1,7 +1,9 @@
+using System;
 using Unity.Entities;
 
 namespace ProjectDawn.Navigation
 {
-    [UpdateInGroup(typeof(AgentSystemGroup))]
+    [Obsolete("AgentSteeringSystemGroup is deprecated, please use AgentSeekingSystemGroup!", false)]
+    [UpdateInGroup(typeof(AgentSeekingSystemGroup))]
     public partial class AgentSteeringSystemGroup : ComponentSystemGroup { }
 }

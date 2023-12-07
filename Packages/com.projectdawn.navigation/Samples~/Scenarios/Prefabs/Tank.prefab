@@ -10,12 +10,12 @@ GameObject:
   m_Component:
   - component: {fileID: 141211120325722357}
   - component: {fileID: 141211120325722314}
-  - component: {fileID: -2906792900742768855}
   - component: {fileID: 141211120325722312}
+  - component: {fileID: -2906792900742768855}
   - component: {fileID: 141211120325722313}
-  - component: {fileID: 141211120325722359}
   - component: {fileID: 8975078718626505813}
   - component: {fileID: 6944230527976388019}
+  - component: {fileID: 141211120325722359}
   m_Layer: 0
   m_Name: Tank
   m_TagString: Untagged
@@ -90,19 +90,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-2906792900742768855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 141211120325722318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d100d0744d5954b4cb6bc1932de8472c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Radius: 0.5
 --- !u!114 &141211120325722312
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121,6 +108,19 @@ MonoBehaviour:
   AngularSpeed: 120
   StoppingDistance: 0
   AutoBreaking: 1
+--- !u!114 &-2906792900742768855
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141211120325722318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d100d0744d5954b4cb6bc1932de8472c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Radius: 0.5
 --- !u!114 &141211120325722313
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135,22 +135,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Radius: 6
   Angle: 135
+  MaxAngle: 300
   Mode: 3
   BlockedStop: 1
---- !u!114 &141211120325722359
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 141211120325722318}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb1c05fb291f6d0419037cf7859e55f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Target: {fileID: 0}
-  Radius: 0
+  UseWalls: 0
 --- !u!114 &8975078718626505813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -180,3 +168,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d72058503702eb42aca97d680e69de1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &141211120325722359
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 141211120325722318}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb1c05fb291f6d0419037cf7859e55f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Target: {fileID: 0}
+  Radius: 0
+  EveryFrame: 0

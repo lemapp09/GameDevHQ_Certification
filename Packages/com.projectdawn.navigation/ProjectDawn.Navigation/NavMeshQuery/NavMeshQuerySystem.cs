@@ -22,6 +22,10 @@ namespace ProjectDawn.Navigation
         int m_MaxIterations = 1024;
 
         [SerializeField]
+        [Tooltip("The maximum number of iterations the agent will use per frame. A langer number results in faster path finding, but it also incurs a greater performance cost.")]
+        int m_IterationsPerFrame = 1024;
+
+        [SerializeField]
         [Tooltip("The maximum size of the agents path.")]
         int m_MaxPath = 1024;
 
@@ -29,6 +33,10 @@ namespace ProjectDawn.Navigation
         /// The maximum number of iterations the agent will use to find a path is determined. Each iteration represents visiting a single node. A larger number results in a more accurate path, but it also incurs a greater performance cost.
         /// </summary>
         public int MaxIterations => m_MaxIterations;
+        /// <summary>
+        /// The maximum number of iterations the agent will use per frame. A langer number results in faster path finding, but it also incurs a greater performance cost.
+        /// </summary>
+        public int IterationsPerFrame => m_IterationsPerFrame;
         /// <summary>
         /// The maximum size of the agents path.
         /// </summary>
@@ -56,7 +64,7 @@ namespace ProjectDawn.Navigation
         /// <summary>
         /// Path is finished.
         /// </summary>
-        [Obsolete("This enum Finished is obsoelete, please use FinishedFullPath or FinishedPartialPath", true)]
+        [Obsolete("This enum Finished is obsolete, please use FinishedFullPath or FinishedPartialPath", true)]
         Finished,
         /// <summary>
         /// Full path is finished, where destination is reachable.
@@ -76,6 +84,7 @@ namespace ProjectDawn.Navigation
     public unsafe partial struct NavMeshQuerySystem : ISystem
     {
         int MaxIterations;
+        int IterationsPerFrame;
         int MaxPathSize;
 
         NativeQueue<NavMeshQueryHandle> m_Free;
@@ -96,6 +105,7 @@ namespace ProjectDawn.Navigation
                 throw new InvalidOperationException("NavMeshQuerySystem does not support lifetime in edit time as unity navmesh does not support it too.");
 
             MaxIterations = AgentsNavigationSettings.Get<NavMeshSubSettings>().MaxIterations;
+            IterationsPerFrame = AgentsNavigationSettings.Get<NavMeshSubSettings>().IterationsPerFrame;
             MaxPathSize = AgentsNavigationSettings.Get<NavMeshSubSettings>().MaxPath;
 
             m_World = NavMeshWorld.GetDefaultWorld();
@@ -165,7 +175,7 @@ namespace ProjectDawn.Navigation
                 // Lazy init query
                 if (m_Status[index] == NavMeshQueryStatus.None)
                 {
-                    m_Queries->ElementAt(index) = new NavMeshQuery(m_World, Allocator.Persistent, MaxPathSize);
+                    m_Queries->ElementAt(index) = new NavMeshQuery(m_World, Allocator.Persistent, MaxIterations);
                     m_Status[index] = NavMeshQueryStatus.Allocated;
                 }
 
@@ -182,7 +192,7 @@ namespace ProjectDawn.Navigation
                         Path = (PolygonId*)m_Paths.GetUnsafePtr() + index * MaxPathSize,
                         Status = ((NavMeshQueryStatus*) m_Status.GetUnsafePtr()) + index,
                         PathLength = ((int*) m_PathLength.GetUnsafePtr()) + index,
-                        MaxIterations = MaxIterations,
+                        MaxIterations = IterationsPerFrame,
                         MaxPathSize = MaxPathSize,
                     };
 
@@ -367,6 +377,57 @@ namespace ProjectDawn.Navigation
             public bool GetPortalPoints(PolygonId polygon, PolygonId neighbourPolygon, out Vector3 left, out Vector3 right)
             {
                 return m_QueryForOtherOperations.GetPortalPoints(polygon, neighbourPolygon, out left, out right);
+            }
+
+            /// <summary>
+            /// Progress path by either removing or adding nodes.
+            /// If newPolygon exists in path, it shortens path up to that node.
+            /// Otherwise it attempts to add newPolygon to path.
+            /// This method can produce invalid path, if newPolygon is can not be connected to path, it is expected that funnel will request new path in that case.
+            /// </summary>
+            public void ProgressPath(ref DynamicBuffer<NavMeshNode> nodes, PolygonId previousPolygon, PolygonId newPolygon)
+            {
+                if (FindIndex(ref nodes, newPolygon, out int index))
+                {
+                    if (nodes.Length > 1)
+                    {
+                        for (int i = 0; i < index; ++i)
+                        {
+                            nodes.RemoveAt(0);
+                        }
+                    }
+                }
+                else
+                {
+                    if (FindIndex(ref nodes, previousPolygon, out int index2))
+                    {
+                        if (nodes.Length > 1)
+                        {
+                            for (int i = 0; i < index2 + 1; ++i)
+                            {
+                                nodes.RemoveAt(0);
+                            }
+                        }
+                    }
+                    if (previousPolygon != newPolygon)
+                    {
+                        nodes.Insert(0, new NavMeshNode { Value = newPolygon });
+                    }
+                }
+            }
+
+            static bool FindIndex(ref DynamicBuffer<NavMeshNode> nodes, PolygonId newPolygon, out int index)
+            {
+                for (int i = 0; i < nodes.Length; ++i)
+                {
+                    if (nodes[i].Value == newPolygon)
+                    {
+                        index = i;
+                        return true;
+                    }
+                }
+                index = -1;
+                return false;
             }
 
             uint GetHash(NavMeshLocation from, NavMeshLocation to, int agentTypeId)

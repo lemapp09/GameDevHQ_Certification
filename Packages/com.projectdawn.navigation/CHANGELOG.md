@@ -1,6 +1,31 @@
 # Changelog
 All notable changes to this package will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 
+## [3.4.2] - 2023-11-14
+- Added Agent.Default
+- Fixed navigation layers not working with query capacity 0
+
+## [3.4.1] - 2023-11-10
+- Fixed issues with navigation layer setting to nothing
+
+## [3.4.0] - 2023-11-08
+- Added path progress in case agents is moved outside agents system group
+- Added Layers to Agent/AgentCollider/AgentSeparation/AgentSonarAvoid/AgentReciprocalAvoid
+- Added Query Check setting. The maximum number of nearby neighbors will be checked to find closest.
+- Added to Smart Stop new behaviour called Give Up Stop.
+- Added AgentCollider enable/disable state
+- Added Iterations Per Frame for NavMesh
+- Added NavMesh Constrained option to control should agent be forced to be on surface
+- Removed old 0.65 entities package baking path
+- Changed Sonar Time Horizon only include agents that are withing radius. This will improve agent seeking.
+- Changed Spatial Partitioning to use parallel jobs
+- Changed AgentSystemGroup to be executed before physics
+
+## [3.3.5] - 2023-10-25
+- Fixed gizmos drawing for multiple game objects and entities
+- Changed ECS gizmos drawing no longer requires to select agent authoring
+- Changed GizmosCommandBuffer no longer has parallel version. As this simplifies gizmos logic and did not worked correctly any way
+
 ## [3.3.4] - 2023-10-13
 - Fixed performance regression with query capacity
 - Fixed samples script agent destination missing reference

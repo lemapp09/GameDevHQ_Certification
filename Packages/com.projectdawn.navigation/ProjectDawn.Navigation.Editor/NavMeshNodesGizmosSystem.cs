@@ -10,7 +10,8 @@ namespace ProjectDawn.Navigation.Editor
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentGizmosSystemGroup))]
+    [UpdateInGroup(typeof(AgentPathingSystemGroup))]
+    [UpdateAfter(typeof(NavMeshPathSystem))]
     public partial struct NavMeshNodesGizmosSystem : ISystem
     {
         [BurstCompile]
@@ -21,8 +22,8 @@ namespace ProjectDawn.Navigation.Editor
             new Job
             {
                 Navmesh = navmesh,
-                Gizmos = gizmos.ValueRW.CreateCommandBuffer().AsParallelWriter(),
-            }.ScheduleParallel();
+                Gizmos = gizmos.ValueRW.CreateCommandBuffer(),
+            }.Schedule();
             navmesh.World.AddDependency(state.Dependency);
         }
 
@@ -31,7 +32,7 @@ namespace ProjectDawn.Navigation.Editor
         {
             [ReadOnly]
             public NavMeshQuerySystem.Singleton Navmesh;
-            public GizmosCommandBuffer.ParallelWriter Gizmos;
+            public GizmosCommandBuffer Gizmos;
 
             public void Execute(Entity entity, in DrawGizmos drawGizmos, in NavMeshPath path, in DynamicBuffer<NavMeshNode> nodes)
             {

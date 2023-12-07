@@ -29,6 +29,8 @@ namespace ProjectDawn.Navigation
         /// </summary>
         public bool BlockedStop;
 
+        public NavigationLayers Layers;
+
         /// <summary>
         /// Returns default configuration.
         /// </summary>
@@ -39,6 +41,7 @@ namespace ProjectDawn.Navigation
             MaxAngle = math.radians(300),
             Mode = SonarAvoidMode.IgnoreBehindAgents,
             BlockedStop = false,
+            Layers = NavigationLayers.Everything,
         };
     }
 }

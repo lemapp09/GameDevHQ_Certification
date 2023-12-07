@@ -15,8 +15,8 @@ namespace ProjectDawn.Navigation.Editor
 {
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentGizmosSystemGroup))]
-    //[UpdateBefore(typeof(AgentSonarAvoidSystem))]
+    [UpdateInGroup(typeof(AgentForceSystemGroup))]
+    [UpdateBefore(typeof(AgentSonarAvoidSystem))]
     public partial struct AgentAvoidGizmosSystem : ISystem
     {
         BufferLookup<NavMeshWall> m_NavMeshWallLookup;
@@ -39,11 +39,11 @@ namespace ProjectDawn.Navigation.Editor
 
             new AgentAvoidJob
             {
-                Gizmos = gizmos.ValueRW.CreateCommandBuffer().AsParallelWriter(),
+                Gizmos = gizmos.ValueRW.CreateCommandBuffer(),
                 Spatial = spatial,
                 NavMeshWallHandle = m_NavMeshWallHandle,
                 NavMeshWallLookup = m_NavMeshWallLookup,
-            }.ScheduleParallel();
+            }.Schedule();
         }
 
         [BurstCompile]
@@ -61,7 +61,7 @@ namespace ProjectDawn.Navigation.Editor
             public BufferLookup<NavMeshWall> NavMeshWallLookup;
             bool HasNavMeshWall;
 
-            public GizmosCommandBuffer.ParallelWriter Gizmos;
+            public GizmosCommandBuffer Gizmos;
 
             public void Execute(Entity entity, in AgentBody body, in AgentShape shape, in AgentSonarAvoid avoid, in LocalTransform transform, in DrawGizmos drawGizmos)
             {
@@ -101,9 +101,15 @@ namespace ProjectDawn.Navigation.Editor
                     Transform = transform,
                     DesiredDirection = desiredDirection,
                 };
+
+#if EXPERIMENTAL_SONAR_TIME
+                action.MaxRadius = Sonar.OuterRadius + shape.Radius - 1e-3f;
+                action.MaxCostAngle = cos(avoid.MaxAngle * 0.5f);
+#endif
+
                 if (shape.Type == ShapeType.Cylinder)
                 {
-                    Spatial.QueryCylinder(transform.Position, sonarRadius, shape.Height, ref action);
+                    Spatial.QueryCylinder(transform.Position, sonarRadius, shape.Height, ref action, avoid.Layers);
 
                     if (HasNavMeshWall)
                     {
@@ -129,7 +135,7 @@ namespace ProjectDawn.Navigation.Editor
                 }
                 else
                 {
-                    Spatial.QuerySphere(transform.Position, sonarRadius, ref action);
+                    Spatial.QuerySphere(transform.Position, sonarRadius, ref action, avoid.Layers);
                 }
 
                 Sonar.DrawSonar(new DrawArc
@@ -184,6 +190,10 @@ namespace ProjectDawn.Navigation.Editor
                 public AgentSonarAvoid Avoid;
                 public LocalTransform Transform;
                 public float3 DesiredDirection;
+#if EXPERIMENTAL_SONAR_TIME
+                public float MaxRadius;
+                public float MaxCostAngle;
+#endif
 
                 public void Execute(Entity otherEntity, AgentBody otherBody, AgentShape otherShape, LocalTransform otherTransform)
                 {
@@ -191,11 +201,25 @@ namespace ProjectDawn.Navigation.Editor
                     if (Entity == otherEntity)
                         return;
 
-                    if (Avoid.Mode == SonarAvoidMode.IgnoreBehindAgents)
+#if EXPERIMENTAL_SONAR_TIME
+                    float3 directionToOther = otherTransform.Position - Transform.Position;
+
+                    // Skip agent outside sonar radius
+                    float distance = length(directionToOther);
+                    if (distance > MaxRadius + otherShape.Radius)
+                        return;
+
+                    // Skip moving agent that is outside the visibility cone
+                    if (!otherBody.IsStopped && distance > EPSILON)
                     {
-                        if (math.dot(DesiredDirection, math.normalizesafe(otherTransform.Position - Transform.Position)) < 0 && math.length(otherBody.Velocity) > 0)
+                        float cosAngle = dot(DesiredDirection, directionToOther / distance);
+                        if (cosAngle < cos(Avoid.MaxAngle * 0.5f))
                             return;
                     }
+#else
+                    if (math.dot(DesiredDirection, math.normalizesafe(otherTransform.Position - Transform.Position)) < 0 && math.length(otherBody.Velocity) > 0)
+                        return;
+#endif
 
                     if (Shape.Type == ShapeType.Cylinder && otherShape.Type == ShapeType.Cylinder)
                     {
@@ -213,7 +237,7 @@ namespace ProjectDawn.Navigation.Editor
 
             struct DrawArc : SonarAvoidance.IDrawArc
             {
-                public GizmosCommandBuffer.ParallelWriter Gizmos;
+                public GizmosCommandBuffer Gizmos;
                 public float InnerRadius;
                 public float OuterRadius;
                 void SonarAvoidance.IDrawArc.DrawArc(float3 position, float3 up, float3 from, float3 to, float angle, UnityEngine.Color color)
@@ -229,7 +253,7 @@ namespace ProjectDawn.Navigation.Editor
 
             struct DrawCircle : SonarAvoidance.IDrawCircle
             {
-                public GizmosCommandBuffer.ParallelWriter Gizmos;
+                public GizmosCommandBuffer Gizmos;
 
                 void SonarAvoidance.IDrawCircle.DrawCircle(float3 center, float3 up, float radius, Color color)
                 {

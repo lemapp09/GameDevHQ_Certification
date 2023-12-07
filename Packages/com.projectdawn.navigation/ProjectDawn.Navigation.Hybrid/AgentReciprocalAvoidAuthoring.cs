@@ -11,6 +11,9 @@ namespace ProjectDawn.Navigation.Hybrid
         [SerializeField]
         protected float Radius = 6;
 
+        [SerializeField]
+        protected NavigationLayers m_Layers = NavigationLayers.Everything;
+
         Entity m_Entity;
 
         /// <summary>
@@ -19,6 +22,7 @@ namespace ProjectDawn.Navigation.Hybrid
         public AgentReciprocalAvoid DefaultAvoid => new AgentReciprocalAvoid
         {
             Radius = Radius,
+            Layers = m_Layers,
         };
 
         /// <summary>
@@ -53,10 +57,6 @@ namespace ProjectDawn.Navigation.Hybrid
 
     internal class AgentReciprocalAvoidBaker : Baker<AgentReciprocalAvoidAuthoring>
     {
-#if UNITY_ENTITIES_VERSION_65
         public override void Bake(AgentReciprocalAvoidAuthoring authoring) => AddComponent(GetEntity(TransformUsageFlags.Dynamic), authoring.DefaultAvoid);
-#else
-        public override void Bake(AgentReciprocalAvoidAuthoring authoring) => AddComponent(authoring.DefaultAvoid);
-#endif
     }
 }

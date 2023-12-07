@@ -22,6 +22,9 @@ namespace ProjectDawn.Navigation.Hybrid
         [SerializeField]
         internal List<AgentAuthoring> Agents;
 
+        [SerializeField]
+        internal bool m_IncludeHierachy = false;
+
         /// <summary>
         /// Returns default component of <see cref="FlockGroup"/>.
         /// </summary>
@@ -71,6 +74,13 @@ namespace ProjectDawn.Navigation.Hybrid
             {
                 agents.Add(new FlockEntity { Value = agent.GetOrCreateEntity() });
             }
+            if (m_IncludeHierachy)
+            {
+                foreach (var agent in transform.GetComponentsInChildren<AgentAuthoring>())
+                {
+                    agents.Add(new FlockEntity { Value = agent.GetOrCreateEntity() });
+                }
+            }
         }
     }
 
@@ -78,7 +88,6 @@ namespace ProjectDawn.Navigation.Hybrid
     {
         public override void Bake(FlockGroupAuthoring authoring)
         {
-#if UNITY_ENTITIES_VERSION_65
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, authoring.DefaulFlockGroup);
 
@@ -88,15 +97,13 @@ namespace ProjectDawn.Navigation.Hybrid
             {
                 agents.Add(new FlockEntity { Value = GetEntity(agent, TransformUsageFlags.Dynamic) });
             }
-#else
-            AddComponent(authoring.DefaulFlockGroup);
-            var agents = AddBuffer<FlockEntity>();
-            agents.Capacity = authoring.Agents.Count;
-            foreach (var agent in authoring.Agents)
+            if (authoring.m_IncludeHierachy)
             {
-                agents.Add(new FlockEntity { Value = GetEntity(agent) });
+                foreach (var agent in authoring.transform.GetComponentsInChildren<AgentAuthoring>())
+                {
+                    agents.Add(new FlockEntity { Value = GetEntity(agent, TransformUsageFlags.Dynamic) });
+                }
             }
-#endif
         }
     }
 }

@@ -19,7 +19,7 @@ namespace ProjectDawn.Navigation.Sample.Mass
             ref var state = ref world.Unmanaged.ResolveSystemStateRef(system);
             state.Enabled = value.isOn;
 
-            var system2 = world.GetExistingSystem(typeof(NavMeshPositionSystem));
+            var system2 = world.GetExistingSystem(typeof(NavMeshDisplacementSystem));
             if (system == SystemHandle.Null)
                 return;
 

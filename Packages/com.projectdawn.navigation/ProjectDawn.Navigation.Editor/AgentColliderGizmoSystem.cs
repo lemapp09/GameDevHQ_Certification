@@ -13,7 +13,8 @@ namespace ProjectDawn.Navigation.Editor
     [DisableAutoCreation]
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentGizmosSystemGroup))]
+    [UpdateInGroup(typeof(AgentDisplacementSystemGroup))]
+    [UpdateBefore(typeof(AgentColliderSystem))]
     public partial struct AgentColliderGizmosSystem : ISystem
     {
         [BurstCompile]
@@ -23,15 +24,15 @@ namespace ProjectDawn.Navigation.Editor
             var spatial = GetSingleton<AgentSpatialPartitioningSystem.Singleton>();
             new Job
             {
-                Gizmos = gizmos.ValueRW.CreateCommandBuffer().AsParallelWriter(),
+                Gizmos = gizmos.ValueRW.CreateCommandBuffer(),
                 Spatial = spatial,
-            }.ScheduleParallel();
+            }.Schedule();
         }
 
         [BurstCompile]
         unsafe partial struct Job : IJobEntity
         {
-            public GizmosCommandBuffer.ParallelWriter Gizmos;
+            public GizmosCommandBuffer Gizmos;
             [ReadOnly]
             public AgentSpatialPartitioningSystem.Singleton Spatial;
 
@@ -45,7 +46,7 @@ namespace ProjectDawn.Navigation.Editor
 
         struct DrawSpatialBoxes : ISpatialQueryVolume
         {
-            public GizmosCommandBuffer.ParallelWriter Gizmos;
+            public GizmosCommandBuffer Gizmos;
             public void Execute(float3 position, float3 size)
             {
                 Gizmos.DrawWireBox(position, size, new UnityEngine.Color(0, 0, 1, 0.4f));
@@ -54,7 +55,7 @@ namespace ProjectDawn.Navigation.Editor
 
         struct DrawSpatialEntities : ISpatialQueryEntity
         {
-            public GizmosCommandBuffer.ParallelWriter Gizmos;
+            public GizmosCommandBuffer Gizmos;
             public float3 Position;
             public void Execute(Entity entity, AgentBody body, AgentShape shape, LocalTransform transform)
             {

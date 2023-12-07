@@ -11,6 +11,9 @@ using Random = UnityEngine.Random;
 
 namespace MetroMayhem.Enemies
 {
+    /// The EnemyAI class controls the behavior of the enemy character in the game.
+    /// It handles movement, animation, audio, health, and combat functionality.
+    /// /
     [RequireComponent(typeof(FootIK))]
     [RequireComponent(typeof(Animator))]
     [RequireComponent(typeof(AudioSource))]
@@ -18,25 +21,50 @@ namespace MetroMayhem.Enemies
     public class EnemyAI : MonoBehaviour
     {
         #region Variables
+
+        /// <summary>
+        /// Represents a NavMesh agent used for navigation on the NavMesh surface.
+        /// </summary>
         [Header("NavMesh Agent")]
         [SerializeField] private AgentAuthoring _agent;
+
+        /// <summary>
+        /// The list of waypoints.
+        /// </summary>
         private List<Transform> _waypoints;
         [SerializeField] private int _currentWayPointIndex = 0;
         
         [Header("Animator")]
         [SerializeField] private Animator _anim;
-        
+
+        /// <summary>
+        /// The audio mixer group used for controlling the volume and effects of the attached audio source.
+        /// </summary>
         [Header("Audio")]
         [SerializeField] private AudioMixerGroup _mixerGroup;
+
+        /// <summary>
+        /// The private variable _audioSource represents the audio source component attached to an object.
+        /// </summary>
         private AudioSource _audioSource;
-        
+
+        /// <summary>
+        /// Time in seconds for full dissolve.
+        /// </summary>
         [FormerlySerializedAs("_dissolveSpeed")]
         [Header("Dissolve")]
         [Tooltip("Time in seconds for full dissolve")]
         [SerializeField] private float _dissolveSpeed; // 10 for Large, 3 for small
+
+        /// <summary>
+        /// The dissolve material used for rendering.
+        /// </summary>
         [FormerlySerializedAs("_DissovleMaterial")] [SerializeField] private Material _DissolveMaterial;
         public float _dissolveAmount = 1.0f;
-        
+
+        /// <summary>
+        /// The health of the object.
+        /// </summary>
         [Header("Health")]
         [SerializeField] private float _health = 100f, _dissolveRate;
         
@@ -44,25 +72,53 @@ namespace MetroMayhem.Enemies
         private int _idlesHash, _hitsHash, _deathsHash, _idealNumberHash, _deathHash, _hitHash, _speedHash,
             _attackHash,  _dissolveAmmountID;
 
+        /// <summary>
+        /// The timer used for tracking the speed check interval.
+        /// </summary>
         private float _speedCheckTimer = 0f, _speedCheckInterval = 0.1f;
         private float _unfreezeCharacter = 0f, _unfreezeInterval = 1.0f;
+
+        /// <summary>
+        /// The unclump character value.
+        /// </summary>
         private float _unclumpCharacter = 0f, _unclumpInterval = 1.0f;
+
+        /// <summary>
+        /// Represents a boolean variable indicating whether the objects are clumped together.
+        /// </summary>
         private bool _isClumped;
+
+        /// <summary>
+        /// The private member variable representing the unfree position in 3D space.
+        /// </summary>
         private Vector3 _unfreePosition;
 
         public delegate void EnemyReachedDestination();
+
+        /// <summary>
+        /// Event that is triggered when an enemy successfully reaches its destination.
+        /// </summary>
         public static event EnemyReachedDestination EnemySurvived;
+
+        /// <summary>
+        /// Represents a delegate that is used to handle the event when an enemy is killed.
+        /// </summary>
         public delegate void EnemyWasKilled();
         public static event EnemyWasKilled EnemyKilled;
         #endregion
-        
+
+        /// <summary>
+        /// Called when the object is enabled, either at runtime or in the editor.
+        /// </summary>
         private void OnEnable() {
             Manager.GameManager.PauseLevel += Pause;
             Manager.GameManager.UnpauseLevel += Unpause;
             Manager.GameManager.StopLevel += Pause;
             InitializeVariables();
         }
-        
+
+        /// Initializes the enemy object by setting up the required components and variables.
+        /// /
         void Start() {
             // Get the NavMeshAgent and Animator components
             if (GetComponent<AgentAuthoring>() != null) {
@@ -97,6 +153,10 @@ namespace MetroMayhem.Enemies
             InitializeAudioSource();
         }
 
+        /// <summary>
+        /// Populates the waypoints list and sets the current waypoint index.
+        /// </summary>
+        /// <param name="waypoints">The list of waypoints to populate.</param>
         public void PopulateWaypoints(List<Transform> waypoints) {
             _waypoints = waypoints;
             _currentWayPointIndex = 0;
@@ -114,6 +174,9 @@ namespace MetroMayhem.Enemies
             _agent.enabled = true;
         }
 
+        /// <summary>
+        /// Resumes the movement of the agent after it has been paused.
+        /// </summary>
         private void Unpause() { 
             // _agent Start
             if (_waypoints[_currentWayPointIndex] != null) {
@@ -136,6 +199,10 @@ namespace MetroMayhem.Enemies
             }
         }
 
+        /// <summary>
+        /// Executes the attack actions.
+        /// </summary>
+        /// <returns>An enumerator for the coroutine.</returns>
         private IEnumerator AttackActions()
         {
             _isAttacking = true;
@@ -144,7 +211,10 @@ namespace MetroMayhem.Enemies
             yield return new WaitForSeconds(Time.deltaTime);
             _isAttacking = false;
         }
-        
+
+        /// <summary>
+        /// Updates the character's movement, animation, unfreezing, and unclumping behavior.
+        /// </summary>
         void Update() {
             if (!_isPaused && !_isAttacking && !_isHit && !_isDead)
             {
@@ -192,6 +262,15 @@ namespace MetroMayhem.Enemies
             _unfreePosition = this.transform.position;
         }
 
+        /// <summary>
+        /// Unclumps the enemy if it is too close to its destination waypoint.
+        /// </summary>
+        /// <remarks>
+        /// If the enemy is currently clumped and its remaining distance to the destination waypoint is less than 4 units,
+        /// it will unclump by setting the _isClumped flag to false and setting the destination to the next available waypoint.
+        /// If there are no more waypoints available, the enemy remains clumped.
+        /// If the enemy is not clumped, it will clump by setting the _isClumped flag to true.
+        /// </remarks>
         private void UnClumpEnemy() {
             if (_agent.EntityBody.RemainingDistance < 4f) {
                 if (_isClumped) {
@@ -209,7 +288,10 @@ namespace MetroMayhem.Enemies
             }
             _unclumpCharacter = 0f;
         }
-        
+
+        /// Decreases the health of this object by the specified amount.
+        /// @param amount The amount of damage to be inflicted.
+        /// /
         public void Damage(int amount) {
             if (!_isHit) {
                 _audioSource.clip = AudioManager.Instance.PlayHurtSound();
@@ -224,6 +306,9 @@ namespace MetroMayhem.Enemies
             }
         }
 
+        /// <summary>
+        /// Performs the death action for the enemy.
+        /// </summary>
         private void Death() {
             _audioSource.clip = AudioManager.Instance.PlayDeathSound();
             _audioSource.Play();
@@ -234,12 +319,22 @@ namespace MetroMayhem.Enemies
             _agent.enabled = false;
         }
 
+        /// <summary>
+        /// A coroutine method that handles hitting the target.
+        /// </summary>
+        /// <returns>An IEnumerator representing the coroutine.</returns>
         IEnumerator HitRoutine() {
             _agent.SetDestination(this.transform.position);
             yield return new WaitForSeconds(1.5f);
             _agent.SetDestination(_waypoints[_currentWayPointIndex].position);
         }
-        
+
+        /// <summary>
+        /// CheckDistance method is used to check the distance between the current position of the object and the waypoints.
+        /// It uses a coroutine to continuously check the distance and update the position of the object.
+        /// When the distance is less than 1f, it moves towards the next waypoint with some random offset. </summary> <returns>
+        /// IEnumerator: IEnumerator object to handle coroutine execution. </returns>
+        /// /
         private IEnumerator  CheckDistance() {
             while (_currentWayPointIndex < _waypoints.Count - 1) {
                 while (Vector3.Distance(transform.position, _waypoints[_currentWayPointIndex].position) > 1f) {
@@ -265,6 +360,12 @@ namespace MetroMayhem.Enemies
             }
         }
 
+        /// <summary>
+        /// Called when an animation state has exited.
+        /// </summary>
+        /// <param name="animator">The animator component in which the animation state has exited.</param>
+        /// <param name="stateInfo">Information about the animation state that has exited.</param>
+        /// <param name="layerIndex">The index of the animation layer.</param>
         public void OnAnimationStateExited(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
         {
             if (stateInfo.shortNameHash == _hitsHash) {
@@ -277,6 +378,10 @@ namespace MetroMayhem.Enemies
             }
         }
 
+        /// Dissolves the enemy character over a specified animation length.
+        /// @param animLength The length of the dissolve animation.
+        /// @returns An IEnumerator object.
+        /// /
         private IEnumerator DissolveEnemy(float animLength)
         {
             SkinnedMeshRenderer[] _parts = GetComponentsInChildren<SkinnedMeshRenderer>(); 
@@ -304,11 +409,27 @@ namespace MetroMayhem.Enemies
         }
 
         private void OnDisable(){
-            Manager.GameManager.PauseLevel -= Pause;
-            Manager.GameManager.UnpauseLevel -= Unpause;
-            Manager.GameManager.StopLevel -= Pause;
+            GameManager.PauseLevel -= Pause;
+            GameManager.UnpauseLevel -= Unpause;
+            GameManager.StopLevel -= Pause;
         }
 
+        /// <summary>
+        /// Initializes the hash codes for various properties of an object.
+        /// </summary>
+        /// <param name="hashCodes">An array containing the hash codes for the properties.</param>
+        /// <remarks>
+        /// The <paramref name="hashCodes"/> array should contain the following elements, in order:
+        /// - The idle hash code
+        /// - The hit hash code
+        /// - The death hash code
+        /// - The ideal number hash code
+        /// - The death hash code
+        /// - The hit hash code
+        /// - The speed hash code
+        /// - The attack hash code
+        /// The method assigns each hash code to its corresponding property in the object.
+        /// </remarks>
         public void InitializeHashCodes(int[] hashCodes)
         {
             _idlesHash = hashCodes[0];
@@ -320,7 +441,10 @@ namespace MetroMayhem.Enemies
             _speedHash = hashCodes[6];
             _attackHash = hashCodes[7];
         }
-        
+
+        /// <summary>
+        /// Initializes the audio source with default settings.
+        /// </summary>
         public void InitializeAudioSource() {
             _audioSource = GetComponent<AudioSource>();
             _audioSource.loop = false;
@@ -330,6 +454,9 @@ namespace MetroMayhem.Enemies
             _audioSource.outputAudioMixerGroup = _mixerGroup;
         }
 
+        /// <summary>
+        /// Invokes the `EnemySurvived` event and returns the game object to the object pool.
+        /// </summary>
         public void ReachedEnd() {
             EnemySurvived?.Invoke();
             PoolManager.Instance.ReturnToPool(this.gameObject);

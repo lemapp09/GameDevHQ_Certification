@@ -17,6 +17,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
             public static readonly GUIContent AngularSpeed = EditorGUIUtility.TrTextContent("Angular Speed", "Maximum turning speed in (deg/s) while following a path.");
             public static readonly GUIContent StoppingDistance = EditorGUIUtility.TrTextContent("Stopping Distance", "Stop within this distance from the target position.");
             public static readonly GUIContent AutoBreaking = EditorGUIUtility.TrTextContent("Auto Breaking", "Should the agent brake automatically to avoid overshooting the destination point?");
+            public static readonly GUIContent Layers = EditorGUIUtility.TrTextContent("Layers", "");
         }
 
         SerializedProperty m_MotionType;
@@ -25,6 +26,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
         SerializedProperty m_AngularSpeed;
         SerializedProperty m_StoppingDistance;
         SerializedProperty m_AutoBreaking;
+        SerializedProperty m_Layers;
 
         AgentAuthoring Agent => target as AgentAuthoring;
 
@@ -35,7 +37,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
             using (new EditorGUI.DisabledScope(Application.isPlaying))
                 EditorGUILayout.PropertyField(m_MotionType, Styles.MotionType);
 
-            if (m_MotionType.enumValueIndex == (int)AgentMotionType.Steering)
+            if (m_MotionType.enumValueIndex == (int)AgentMotionType.DefaultLocomotion || m_MotionType.enumValueIndex == (int) AgentMotionType.Steering)
             {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(m_Speed, Styles.Speed);
@@ -45,6 +47,8 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
                 EditorGUILayout.PropertyField(m_AutoBreaking, Styles.AutoBreaking);
                 EditorGUI.indentLevel--;
             }
+
+            EditorGUILayout.PropertyField(m_Layers, Styles.Layers);
 
             if (m_MotionType.enumValueIndex == (int) AgentMotionType.Static)
             {
@@ -65,8 +69,12 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
                 foreach (var target in targets)
                 {
                     var authoring = target as AgentAuthoring;
+#pragma warning disable 0618
                     if (authoring.HasEntitySteering)
                         authoring.EntitySteering = authoring.DefaultSteering;
+#pragma warning restore 0618
+                    if (authoring.HasEntityLocomotion)
+                        authoring.EntityLocomotion = authoring.DefaultLocomotion;
                 }
             }
         }
@@ -79,6 +87,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
             m_AngularSpeed = serializedObject.FindProperty("AngularSpeed");
             m_StoppingDistance = serializedObject.FindProperty("StoppingDistance");
             m_AutoBreaking = serializedObject.FindProperty("AutoBreaking");
+            m_Layers = serializedObject.FindProperty("m_Layers");
 
             if (Application.isPlaying)
             {
@@ -86,9 +95,13 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
                 if (world == null)
                     return;
                 var manager = world.EntityManager;
-                if (!manager.HasComponent<DrawGizmos>(Agent.GetOrCreateEntity()))
+                foreach (var target in targets)
                 {
-                    manager.AddComponent<DrawGizmos>(Agent.GetOrCreateEntity());
+                    var agent = target as AgentAuthoring;
+                    if (!manager.HasComponent<DrawGizmos>(agent.GetOrCreateEntity()))
+                    {
+                        manager.AddComponent<DrawGizmos>(agent.GetOrCreateEntity());
+                    }
                 }
             }
         }
@@ -101,27 +114,15 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
                 if (world == null)
                     return;
                 var manager = world.EntityManager;
-                if (manager.HasComponent<DrawGizmos>(Agent.GetOrCreateEntity()))
+                foreach (var target in targets)
                 {
-                    manager.RemoveComponent<DrawGizmos>(Agent.GetOrCreateEntity());
+                    var agent = target as AgentAuthoring;
+                    if (manager.HasComponent<DrawGizmos>(agent.GetOrCreateEntity()))
+                    {
+                        manager.RemoveComponent<DrawGizmos>(agent.GetOrCreateEntity());
+                    }
                 }
             }
-        }
-
-        void OnSceneGUI()
-        {
-            // Call OnSceneGUI only once
-            if (target == Selection.activeObject)
-                return;
-
-            var world = World.DefaultGameObjectInjectionWorld;
-            if (world == null)
-                return;
-            var gizmosSystem = world.Unmanaged.GetExistingUnmanagedSystem<GizmosSystem>();
-            if (gizmosSystem == SystemHandle.Null)
-                return;
-            var gizmos = world.EntityManager.GetComponentData<GizmosSystem.Singleton>(gizmosSystem);
-            gizmos.ExecuteCommandBuffers();
         }
     }
 }

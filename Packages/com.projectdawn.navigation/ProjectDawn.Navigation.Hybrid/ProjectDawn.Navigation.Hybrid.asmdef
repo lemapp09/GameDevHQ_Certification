@@ -2,6 +2,7 @@
     "name": "ProjectDawn.Navigation.Hybrid",
     "rootNamespace": "",
     "references": [
+        "GUID:6fcc1e56e4cd54a418e00fc005c4c296",
         "GUID:3607ee9fe32534e4fbbc80defa6f41a4",
         "GUID:94c12171f11916942b3be5d93e29681e",
         "GUID:d8b63aba1907145bea998dd612889d6b",
@@ -20,11 +21,6 @@
     "autoReferenced": true,
     "defineConstraints": [],
     "versionDefines": [
-        {
-            "name": "com.unity.entities",
-            "expression": "1.0.0-pre.65",
-            "define": "UNITY_ENTITIES_VERSION_65"
-        }
     ],
     "noEngineReferences": false
 }

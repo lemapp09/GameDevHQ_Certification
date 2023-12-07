@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ProjectDawn.Navigation.Sample.Mass
+namespace ProjectDawn.Navigation.Sample.BoardDefense
 {
     [RequireComponent(typeof(Text))]
     public class TextPerformanceCounter : MonoBehaviour

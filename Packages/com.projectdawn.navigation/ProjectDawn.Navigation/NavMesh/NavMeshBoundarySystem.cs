@@ -17,10 +17,7 @@ namespace ProjectDawn.Navigation
     /// </summary>
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentSystemGroup))]
-    [UpdateAfter(typeof(AgentSteeringSystemGroup))]
-    [UpdateAfter(typeof(NavMeshSteeringSystem))]
-    [UpdateBefore(typeof(AgentForceSystemGroup))]
+    [UpdateInGroup(typeof(AgentPathingSystemGroup))]
     public partial struct NavMeshBoundarySystem : ISystem
     {
         [BurstCompile]

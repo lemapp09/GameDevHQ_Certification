@@ -49,12 +49,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 825ee44755f2e4846a6229365ed8d44c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  MotionType: 2
+  MotionType: 3
   Speed: 3.5
   Acceleration: 8
   AngularSpeed: 120
   StoppingDistance: 0
   AutoBreaking: 1
+  m_Layers: 1
 --- !u!114 &-4360333603742120830
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84,6 +85,7 @@ MonoBehaviour:
   AgentTypeId: 0
   AreaMask: -1
   AutoRepath: 1
+  m_Constrained: 1
   MappingExtent:
     x: 3
     y: 3
@@ -100,6 +102,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d72058503702eb42aca97d680e69de1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_Layers: -1
 --- !u!114 &-6211448534593624900
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,8 +117,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Radius: 2
   Angle: 180
+  MaxAngle: 300
   Mode: 3
   BlockedStop: 0
+  UseWalls: 0
+  m_Layers: -1
 --- !u!1 &6830697395298807692
 GameObject:
   m_ObjectHideFlags: 0

@@ -95,9 +95,15 @@ namespace ProjectDawn.Navigation
                     Transform = transform,
                     DesiredDirection = desiredDirection,
                 };
+
+#if EXPERIMENTAL_SONAR_TIME
+                action.MaxRadius = Sonar.OuterRadius + shape.Radius - 1e-3f;
+                action.MaxCostAngle = cos(avoid.MaxAngle * 0.5f);
+#endif
+
                 if (shape.Type == ShapeType.Cylinder)
                 {
-                    Spatial.QueryCylinder(transform.Position, shape.Radius + sonarRadius, shape.Height, Spatial.m_QueryCapacity, ref action);
+                    Spatial.QueryCylinder(transform.Position, shape.Radius + sonarRadius, shape.Height, Spatial.m_QueryCapacity, ref action, avoid.Layers);
 
                     if (HasNavMeshWall)
                     {
@@ -120,7 +126,7 @@ namespace ProjectDawn.Navigation
                 }
                 else
                 {
-                    Spatial.QueryCircle(transform.Position, shape.Radius + sonarRadius, Spatial.m_QueryCapacity, ref action);
+                    Spatial.QueryCircle(transform.Position, shape.Radius + sonarRadius, Spatial.m_QueryCapacity, ref action, avoid.Layers);
                 }
 
                 bool success = Sonar.FindClosestDirection(out float3 newDirection);
@@ -157,6 +163,10 @@ namespace ProjectDawn.Navigation
                 public AgentSonarAvoid Avoid;
                 public LocalTransform Transform;
                 public float3 DesiredDirection;
+#if EXPERIMENTAL_SONAR_TIME
+                public float MaxRadius;
+                public float MaxCostAngle;
+#endif
 
                 public void Execute(Entity otherEntity, AgentBody otherBody, AgentShape otherShape, LocalTransform otherTransform)
                 {
@@ -164,11 +174,25 @@ namespace ProjectDawn.Navigation
                     if (Entity == otherEntity)
                         return;
 
-                    if (Avoid.Mode == SonarAvoidMode.IgnoreBehindAgents)
+#if EXPERIMENTAL_SONAR_TIME
+                    float3 directionToOther = otherTransform.Position - Transform.Position;
+
+                    // Skip agent outside sonar radius
+                    float distance = length(directionToOther);
+                    if (distance > MaxRadius + otherShape.Radius)
+                        return;
+
+                    // Skip moving agent that is outside the visibility cone
+                    if (!otherBody.IsStopped && distance > EPSILON)
                     {
-                        if (dot(DesiredDirection, normalizesafe(otherTransform.Position - Transform.Position)) < 0 && length(otherBody.Velocity) > 0)
+                        float cosAngle = dot(DesiredDirection, directionToOther / distance);
+                        if (cosAngle < cos(Avoid.MaxAngle * 0.5f))
                             return;
                     }
+#else
+                    if (math.dot(DesiredDirection, math.normalizesafe(otherTransform.Position - Transform.Position)) < 0 && math.length(otherBody.Velocity) > 0)
+                        return;
+#endif
 
                     if (Shape.Type == ShapeType.Cylinder && otherShape.Type == ShapeType.Cylinder)
                     {

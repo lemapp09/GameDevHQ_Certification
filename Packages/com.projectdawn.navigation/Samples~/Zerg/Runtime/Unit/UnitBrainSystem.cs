@@ -376,7 +376,7 @@ namespace ProjectDawn.Navigation.Sample.Zerg
             public ComponentLookup<LocalTransform> TransformLookup;
             public float DeltaTime;
 
-            public void Execute(Entity entity, in UnitBrain brain, in UnitCombat combat, in AgentSteering steering)
+            public void Execute(Entity entity, in UnitBrain brain, in UnitCombat combat, in AgentLocomotion locomotion)
             {
                 if (brain.State != UnitBrainState.Attack)
                     return;
@@ -390,7 +390,7 @@ namespace ProjectDawn.Navigation.Sample.Zerg
 
                 float3 facing = math.normalizesafe(targetTransform.Position - transform.Position);
                 float angle = math.atan2(facing.x, facing.z);
-                transform.Rotation = math.slerp(transform.Rotation, quaternion.RotateY(angle), DeltaTime * steering.AngularSpeed);
+                transform.Rotation = math.slerp(transform.Rotation, quaternion.RotateY(angle), DeltaTime * locomotion.AngularSpeed);
                 TransformLookup[entity] = transform;
             }
         }

@@ -11,8 +11,7 @@ namespace ProjectDawn.Navigation
     /// System that controls agent NavMesh path.
     /// </summary>
     [BurstCompile]
-    [UpdateInGroup(typeof(AgentSystemGroup))]
-    [UpdateBefore(typeof(AgentSteeringSystemGroup))]
+    [UpdateInGroup(typeof(AgentPathingSystemGroup))]
     public partial struct NavMeshPathSystem : ISystem
     {
         [BurstCompile]

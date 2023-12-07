@@ -1,6 +1,7 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace ProjectDawn.Navigation.Hybrid
 {
@@ -22,6 +23,10 @@ namespace ProjectDawn.Navigation.Hybrid
         [SerializeField]
         protected bool AutoRepath = true;
 
+        [FormerlySerializedAs("m_Constrained")]
+        [SerializeField]
+        protected bool m_Grounded = true;
+
         [SerializeField]
         protected float3 MappingExtent = 10;
 
@@ -30,12 +35,13 @@ namespace ProjectDawn.Navigation.Hybrid
         /// <summary>
         /// Returns default component of <see cref="NavMeshPath"/>.
         /// </summary>
-        public NavMeshPath DefaulPath => new NavMeshPath
+        public NavMeshPath DefaulPath => new()
         {
             State = NavMeshPathState.Finished,
             AgentTypeId = AgentTypeId,
             AreaMask = AreaMask,
             AutoRepath = AutoRepath,
+            Grounded = m_Grounded,
             MappingExtent = MappingExtent,
         };
 
@@ -106,14 +112,9 @@ namespace ProjectDawn.Navigation.Hybrid
     {
         public override void Bake(AgentNavMeshAuthoring authoring)
         {
-#if UNITY_ENTITIES_VERSION_65
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             AddComponent(entity, authoring.DefaulPath);
             AddBuffer<NavMeshNode>(entity);
-#else
-            AddComponent(authoring.DefaulPath);
-            AddBuffer<NavMeshNode>();
-#endif
         }
     }
 }

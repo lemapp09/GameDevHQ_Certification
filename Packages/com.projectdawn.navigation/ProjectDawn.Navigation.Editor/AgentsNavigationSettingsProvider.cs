@@ -99,26 +99,6 @@ namespace ProjectDawn.Navigation.Editor
         [SettingsProvider]
         static SettingsProvider CreateSettingsProvider() => new AgentsNavigationSettingsProvider("Project/AgentsNavigation", SettingsScope.Project);
 
-        static void DrawHeaderGUILayout(System.Type type, float height = 20)
-        {
-            string[] scriptAsset = AssetDatabase.FindAssets(type.Name + " t:MonoScript");
-            string scriptPath = AssetDatabase.GUIDToAssetPath(scriptAsset[0]);
-            var settings = AssetDatabase.LoadAssetAtPath(scriptPath, typeof(UnityEngine.Object));
-
-            Rect r = GUILayoutUtility.GetRect(0, height);
-
-            r.x += 5;
-            r.width -= 5;
-
-            Rect iconRect = new Rect(r.x, r.y, height, height);
-            GUI.Label(iconRect, AssetPreview.GetMiniThumbnail(settings), Styles.centerStyle);
-
-            Rect titleRect = new Rect(r.x + height + 5, r.y, r.width - height, r.height);
-            GUI.Label(titleRect, ExtractComponentName(type), EditorStyles.largeLabel);
-
-            DrawHorizontalLine();
-        }
-
         static void DrawHorizontalLine()
         {
             Rect lineRect = GUILayoutUtility.GetRect(GUIContent.none, Styles.lineStyle, GUILayout.Height(1)); // Set the height of the line to 1

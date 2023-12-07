@@ -6,9 +6,12 @@ namespace ProjectDawn.Navigation
     {
         public float Radius;
 
+        public NavigationLayers Layers;
+
         public static AgentReciprocalAvoid Default => new()
         {
-            Radius = 2
+            Radius = 2,
+            Layers = NavigationLayers.Everything,
         };
     }
 }

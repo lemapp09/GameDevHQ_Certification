@@ -24,8 +24,7 @@ namespace ProjectDawn.Navigation
 
     [BurstCompile]
     [RequireMatchingQueriesForUpdate]
-    [UpdateInGroup(typeof(AgentSystemGroup))]
-    [UpdateAfter(typeof(AgentTransformSystemGroup))]
+    [UpdateInGroup(typeof(AgentDisplacementSystemGroup))]
     public partial struct AgentColliderSystem : ISystem
     {
         int m_Iterations;
@@ -85,7 +84,7 @@ namespace ProjectDawn.Navigation
                     ResolveFactor = ResolveFactor,
                 };
 
-                Spatial.QueryCylinder(transform.Position, shape.Radius, shape.Height, Spatial.m_QueryCapacity, ref action);
+                Spatial.QueryCylinder(transform.Position, shape.Radius, shape.Height, Spatial.m_QueryCapacity, ref action, collider.Layers);
 
                 if (action.Weight > 0)
                 {
@@ -104,7 +103,7 @@ namespace ProjectDawn.Navigation
                     ResolveFactor = ResolveFactor,
                 };
 
-                Spatial.QueryCircle(transform.Position, shape.Radius, Spatial.m_QueryCapacity, ref action);
+                Spatial.QueryCircle(transform.Position, shape.Radius, Spatial.m_QueryCapacity, ref action, collider.Layers);
 
                 if (action.Weight > 0)
                 {
@@ -120,6 +119,7 @@ namespace ProjectDawn.Navigation
             public AgentBody Body;
             public AgentShape Shape;
             public LocalTransform Transform;
+
             public float2 Displacement;
             public float Weight;
             public float ResolveFactor;
@@ -171,6 +171,7 @@ namespace ProjectDawn.Navigation
             public AgentBody Body;
             public AgentShape Shape;
             public LocalTransform Transform;
+
             public float3 Displacement;
             public float Weight;
             public float ResolveFactor;

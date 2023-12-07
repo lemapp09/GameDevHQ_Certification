@@ -33,6 +33,9 @@ namespace ProjectDawn.Navigation.Hybrid
         [SerializeField]
         protected bool UseWalls = false;
 
+        [SerializeField]
+        protected NavigationLayers m_Layers = NavigationLayers.Everything;
+
         Entity m_Entity;
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace ProjectDawn.Navigation.Hybrid
             MaxAngle = math.radians(MaxAngle),
             Mode = Mode,
             BlockedStop = BlockedStop,
+            Layers = m_Layers,
         };
 
         /// <summary>
@@ -115,10 +119,6 @@ namespace ProjectDawn.Navigation.Hybrid
 
     internal class AgentSonarAvoidBaker : Baker<AgentAvoidAuthoring>
     {
-#if UNITY_ENTITIES_VERSION_65
         public override void Bake(AgentAvoidAuthoring authoring) => AddComponent(GetEntity(TransformUsageFlags.Dynamic), authoring.DefaultAvoid);
-#else
-        public override void Bake(AgentAvoidAuthoring authoring) => AddComponent(authoring.DefaultAvoid);
-#endif
     }
 }

@@ -12,6 +12,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
         SerializedProperty m_Cohesion;
         SerializedProperty m_Alignment;
         SerializedProperty m_Agents;
+        SerializedProperty m_IncludeHierachy;
 
         public override void OnInspectorGUI()
         {
@@ -22,6 +23,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
             EditorGUILayout.PropertyField(m_Cohesion);
             EditorGUILayout.PropertyField(m_Alignment);
             EditorGUILayout.PropertyField(m_Agents);
+            EditorGUILayout.PropertyField(m_IncludeHierachy);
             if (serializedObject.ApplyModifiedProperties())
             {
                 // Update all agents entities shape
@@ -41,6 +43,7 @@ namespace ProjectDawn.Navigation.Hybrid.Editor
             m_Cohesion = serializedObject.FindProperty("Cohesion");
             m_Alignment = serializedObject.FindProperty("Alignment");
             m_Agents = serializedObject.FindProperty("Agents");
+            m_IncludeHierachy = serializedObject.FindProperty("m_IncludeHierachy");
         }
     }
 }

@@ -61,11 +61,7 @@ namespace ProjectDawn.Navigation.Hybrid
 
     internal class AgentCapsuleShapeBaker : Baker<AgentCylinderShapeAuthoring>
     {
-#if UNITY_ENTITIES_VERSION_65
 
         public override void Bake(AgentCylinderShapeAuthoring authoring) => AddComponent(GetEntity(TransformUsageFlags.Dynamic), authoring.DefaultShape);
-#else
-        public override void Bake(AgentCylinderShapeAuthoring authoring) => AddComponent(authoring.DefaultShape);
-#endif
     }
 }
